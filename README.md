@@ -79,13 +79,15 @@ To test the Admin features (like adding a new dish):
 
 Hi Sir,
 
-I have implemented all the requirements for Milestone 2, including the cloud storage and authentication fixes you mentioned.
+Here are the updates based on your feedback from last time. I’ve implemented all the Milestone 2 requirements:
 
-- **Firebase Storage**: I switched to Firebase for easier image hosting. The configuration is already in the code, so the upload feature on the Admin page should work right away without you needing to set up anything extra.
-- **Database Access**: I've made sure the MongoDB cluster is accessible. I've included the specific connection string and credentials in `MENTOR_NOTES.md` just in case.
-- **Google Login**: The "Sign in with Google" button on the login page is fully functional.
+1.  **Firebase Storage**: I switched to Firebase for handling image uploads. The config is already in the code, so the upload feature in the Admin panel should work automatically for you.
+2.  **Database Access**: I double-checked the MongoDB connection. The specific connection string (whitelisted for you) is in `MENTOR_NOTES.md`.
+3.  **Google Login**: The "Sign in with Google" button is working on the login page.
 
-I tried to make the setup as smooth as possible for you. Let me know if you encounter any issues running it!
+I also added you to the Firebase project (check your email for the invite) so you can verify the storage.
+
+Let me know if you run into any issues!
 
 Best regards,
 **Rick Cabugnason**
