@@ -1,0 +1,280 @@
+/* styles/style.css - v4.1 Force Deploy */
+
+/* =========================================
+   THEME VARIABLES - Natural & Appetizing
+   ========================================= */
+:root {
+  /* Primary: A warm, rich "Tomato" red instead of harsh digital red */
+  --primary-color: #E63946; 
+  --primary-hover: #D62828;
+  
+  /* Secondary: A golden "Honey" yellow */
+  --secondary-color: #FCA311;
+  --secondary-hover: #E59200;
+
+  /* Backgrounds: Warm cream/off-white, not clinical white */
+  --bg-color: #FFFDF7;
+  --bg-subtle: #FFF3E0;
+  
+  /* Text: Dark charcoal/brown, softer than pure black */
+  --text-main: #2D2D2D;
+  --text-muted: #666666;
+  
+  /* Accents */
+  --success-color: #2A9D8F; /* Teal - fresher than standard green */
+  --success-hover: #21867a;
+}
+
+/* =========================================
+   GLOBAL STYLES
+   ========================================= */
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  background-color: var(--bg-color);
+  background-image: radial-gradient(circle at 10% 20%, rgb(255, 252, 240) 0%, rgb(255, 248, 225) 90%);
+  color: var(--text-main);
+}
+
+h1, h2, h3, h4, h5, h6, .navbar-brand {
+  font-family: 'Poppins', sans-serif;
+  color: var(--text-main);
+}
+
+/* =========================================
+   BOOTSTRAP OVERRIDES (Theming)
+   ========================================= */
+
+/* Replace standard 'danger' (red) with our Warm Red */
+.bg-danger {
+  background-color: var(--primary-color) !important;
+}
+
+.text-danger {
+  color: var(--primary-color) !important;
+}
+
+.border-danger {
+  border-color: var(--primary-color) !important;
+}
+
+.btn-danger {
+  background-color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+}
+
+.btn-danger:hover {
+  background-color: var(--primary-hover) !important;
+  border-color: var(--primary-hover) !important;
+}
+
+.btn-outline-danger {
+  color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+}
+
+.btn-outline-danger:hover {
+  background-color: var(--primary-color) !important;
+  color: white !important;
+}
+
+/* Replace standard 'warning' (yellow) with our Golden Honey */
+.bg-warning {
+  background-color: var(--secondary-color) !important;
+  color: white !important; /* Better contrast */
+}
+
+.text-warning {
+  color: var(--secondary-color) !important;
+}
+
+.btn-warning {
+  background-color: var(--secondary-color) !important;
+  border-color: var(--secondary-color) !important;
+  color: white !important;
+}
+
+.btn-warning:hover {
+  background-color: var(--secondary-hover) !important;
+  border-color: var(--secondary-hover) !important;
+  color: white !important;
+}
+
+.btn-outline-warning {
+  color: var(--secondary-color) !important;
+  border-color: var(--secondary-color) !important;
+}
+
+.btn-outline-warning:hover {
+  background-color: var(--secondary-color) !important;
+  color: white !important;
+}
+
+/* Primary Button (Admin actions) -> Teal for variety */
+.btn-primary {
+  background-color: var(--success-color) !important;
+  border-color: var(--success-color) !important;
+}
+
+.btn-primary:hover {
+  background-color: var(--success-hover) !important;
+  border-color: var(--success-hover) !important;
+}
+
+.text-primary {
+  color: var(--success-color) !important;
+}
+
+/* Success Button -> Also Teal */
+.btn-success {
+  background-color: var(--success-color) !important;
+  border-color: var(--success-color) !important;
+}
+
+/* Background Utilities */
+.bg-light {
+  background-color: var(--bg-subtle) !important;
+}
+
+.bg-dark {
+  background-color: #1D1D1D !important;
+}
+
+/* Navbar Tweaks */
+.navbar {
+  /* Use a gradient or solid warm red */
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-hover)) !important;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(230, 57, 70, 0.15) !important;
+}
+
+/* Admin Navbar specific override (if it uses bg-dark, we want it dark, but softer) */
+.navbar.bg-dark {
+  background: #1D1D1D !important;
+}
+
+.nav-link {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+  color: var(--secondary-color) !important;
+  transform: translateY(-2px);
+}
+
+.nav-link.active {
+  color: var(--secondary-color) !important;
+  font-weight: 700;
+}
+
+/* Footer Tweaks */
+footer.bg-dark {
+  background-color: #1D1D1D !important; /* Softer dark */
+}
+
+/* =========================================
+   COMPONENT STYLES
+   ========================================= */
+
+/* Hero background */
+.hero-bg {
+  /* Using a better food overlay gradient */
+  background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4)),
+    url('http://static.photos/food/1200x630/42?sizzling');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed; /* Parallax effect */
+}
+
+/* Cards */
+.card {
+  border: none;
+  background-color: white;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border-radius: 16px; /* Softer corners */
+  overflow: hidden;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+}
+
+/* Food Cards specific */
+.food-card img {
+  transition: transform 0.5s ease;
+}
+
+.food-card:hover img {
+  transform: scale(1.05);
+}
+
+/* Forms */
+.form-control, .form-select {
+  border-radius: 12px;
+  border: 2px solid #EEE;
+  padding: 0.75rem 1rem;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 4px rgba(230, 57, 70, 0.1);
+}
+
+/* Modals */
+.modal-content {
+  border-radius: 20px;
+  border: none;
+  overflow: hidden;
+}
+
+.modal-header {
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-hover)) !important;
+  color: white;
+  border-bottom: none;
+  padding: 1.5rem;
+}
+
+/* Utility Classes */
+.shadow-soft {
+  box-shadow: 0 10px 40px -10px rgba(0,0,0,0.1);
+}
+
+.text-muted {
+  color: var(--text-muted) !important;
+}
+
+/* Feather Icons */
+.feather {
+  stroke-width: 2.5px;
+}
+
+/* Custom "Natural" Background Utility */
+.bg-natural {
+  background-color: var(--bg-subtle);
+}
+
+/* Hover Lift */
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important;
+}
+
+/* Order Item Card (in Modal) */
+.order-item-card {
+  background-color: white !important;
+  border: 1px solid #eee !important;
+}
+
+/* Delivery/Payment Options (in Modal) */
+.delivery-options, .payment-options {
+  background-color: var(--bg-subtle) !important;
+  border: 1px solid rgba(0,0,0,0.05) !important;
+}

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ChillBites | Login</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/feather-icons"></script>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="styles/style.css?v=2.0">
+</head>
+<body class="font-['Open_Sans'] bg-gray-50">
+
+  <!-- RESPONSIVE HEADER -->
+  <header class="bg-danger sticky-top shadow-lg text-white">
+    <div class="container py-3 d-flex align-items-center justify-content-between">
+      <!-- Logo -->
+      <a class="d-flex align-items-center text-decoration-none" href="index.html">
+        <img src="images/chillbites-logo.jpg" alt="Chillbites logo" class="brand-logo me-2" style="height: 40px;">
+        <span class="fw-bold fs-4 text-white">ChillBites</span>
+      </a>
+
+      <!-- Desktop Menu (Visible on lg+) -->
+      <nav class="d-none d-lg-flex align-items-center gap-4">
+        <a href="index.html" class="text-white text-decoration-none hover-scale">Home</a>
+        <a href="menu.html" class="text-white text-decoration-none hover-scale">Menu</a>
+        <a href="about.html" class="text-white text-decoration-none hover-scale">About</a>
+        <a href="contact.html" class="text-white text-decoration-none hover-scale">Contact</a>
+        <div class="vr bg-white opacity-50 mx-2"></div>
+        <a href="login.html" id="authLinkDesktop" class="btn btn-warning btn-sm fw-bold px-4 rounded-pill text-white">Login</a>
+        <a href="#" id="logoutLinkDesktop" class="text-white text-decoration-none d-none">Logout</a>
+      </nav>
+
+      <!-- Mobile Hamburger Button (Visible on lg-) -->
+      <button class="btn btn-outline-light d-flex align-items-center gap-2 d-lg-none" id="menuToggle" style="border-width: 2px;">
+        <span class="fw-bold">Menu</span>
+        <i data-feather="menu"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- FULLSCREEN MENU OVERLAY -->
+  <div id="fullScreenMenu" class="d-none d-lg-none position-fixed top-0 start-0 w-100 h-100 bg-dark z-50 d-flex flex-column align-items-center justify-content-center" style="--bs-bg-opacity: .95; z-index: 9999;">
+    <button id="closeMenuBtn" class="position-absolute top-0 end-0 m-4 btn btn-link text-white p-2">
+      <i data-feather="x" style="width: 32px; height: 32px;"></i>
+    </button>
+    
+    <nav class="d-flex flex-column gap-4 text-center">
+      <a href="index.html" class="text-white fs-2 text-decoration-none fw-bold hover-warning">Home</a>
+      <a href="menu.html" class="text-white fs-2 text-decoration-none fw-bold hover-warning">Menu</a>
+      <a href="about.html" class="text-white fs-2 text-decoration-none fw-bold hover-warning">About</a>
+      <a href="contact.html" class="text-white fs-2 text-decoration-none fw-bold hover-warning">Contact</a>
+      <div class="border-top border-secondary w-50 mx-auto my-2"></div>
+      <a href="login.html" id="authLink" class="text-warning fs-3 text-decoration-none fw-bold">Login</a>
+      <a href="#" id="logoutLink" class="text-secondary fs-4 text-decoration-none d-none">Logout</a>
+    </nav>
+  </div>
+
+  <!-- Login Form -->
+  <main class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card shadow-lg border-0 rounded-4">
+          <div class="card-body p-5">
+            <div class="text-center mb-4">
+              <h2 class="fw-bold text-danger">Welcome Back</h2>
+              <p class="text-muted">Log in to manage orders and earn loyalty points</p>
+            </div>
+            <form id="loginForm" class="needs-validation" novalidate>
+              <div class="mb-3">
+                <label for="loginEmail" class="form-label fw-semibold">Email Address</label>
+                <input type="email" class="form-control form-control-lg" id="loginEmail" required />
+                <div class="invalid-feedback">Please enter a valid email.</div>
+              </div>
+              <div class="mb-4">
+                <label for="loginPassword" class="form-label fw-semibold">Password</label>
+                <input type="password" class="form-control form-control-lg" id="loginPassword" required />
+                <div class="invalid-feedback">Please enter your password.</div>
+              </div>
+              <div class="d-grid mb-3">
+                <button type="submit" class="btn btn-danger btn-lg rounded-pill">Log In</button>
+              </div>
+              <div class="d-grid mb-3">
+                <a class="btn btn-outline-dark btn-lg rounded-pill" href="/api/users/auth/google">Continue with Google</a>
+              </div>
+              <p class="text-center text-muted">Don't have an account? <a href="signup.html" class="text-danger fw-semibold">Sign Up</a></p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-dark text-white py-4 text-center">
+    <div class="container">
+      <p class="mb-0">© 2025 ChillBites</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>feather.replace()</script>
+  <script src="scripts/script.js?v=4.0"></script>
+</body>
+</html>

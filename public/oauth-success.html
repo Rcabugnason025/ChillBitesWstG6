@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ChillBites | OAuth</title>
+</head>
+<body>
+  <script>
+    const hash = window.location.hash.startsWith('#') ? window.location.hash.slice(1) : '';
+    const params = new URLSearchParams(hash);
+    const token = params.get('token');
+    const id = params.get('id');
+    const email = params.get('email');
+    const username = params.get('username');
+    const isAdmin = params.get('isAdmin') === '1';
+
+    if (token && id && email) {
+      localStorage.setItem('currentUser', JSON.stringify({ _id: id, email, username, isAdmin, token }));
+      window.location.href = isAdmin ? 'admin.html' : 'index.html';
+    } else {
+      window.location.href = 'login.html';
+    }
+  </script>
+</body>
+</html>
+

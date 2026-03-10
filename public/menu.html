@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ChillBites | Menu</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/feather-icons"></script>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="styles/style.css?v=3.0">
+</head>
+<body class="font-['Open_Sans'] bg-gray-50">
+
+  <!-- RESPONSIVE HEADER -->
+  <header class="bg-danger sticky-top shadow-lg text-white">
+    <div class="container py-3 d-flex align-items-center justify-content-between">
+      <!-- Logo -->
+      <a class="d-flex align-items-center text-decoration-none" href="index.html">
+        <img src="images/chillbites-logo.jpg" alt="Chillbites logo" class="brand-logo me-2" style="height: 40px;">
+        <span class="fw-bold fs-4 text-white">ChillBites</span>
+      </a>
+
+      <!-- Desktop Menu (Visible on lg+) -->
+      <nav class="d-none d-lg-flex align-items-center gap-4">
+        <a href="index.html" class="text-white text-decoration-none hover-scale">Home</a>
+        <a href="menu.html" class="text-white text-decoration-none fw-bold hover-scale">Menu</a>
+        <a href="about.html" class="text-white text-decoration-none hover-scale">About</a>
+        <a href="contact.html" class="text-white text-decoration-none hover-scale">Contact</a>
+        <div class="vr bg-white opacity-50 mx-2"></div>
+        <a href="login.html" id="authLinkDesktop" class="btn btn-warning btn-sm fw-bold px-4 rounded-pill text-white">Login</a>
+        <a href="#" id="logoutLinkDesktop" class="text-white text-decoration-none d-none">Logout</a>
+      </nav>
+
+      <!-- Mobile Hamburger Button (Visible on lg-) -->
+      <button class="btn btn-outline-light d-flex align-items-center gap-2 d-lg-none" id="menuToggle" style="border-width: 2px;">
+        <span class="fw-bold">Menu</span>
+        <i data-feather="menu"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- FULLSCREEN MENU OVERLAY -->
+  <div id="fullScreenMenu" class="d-none d-lg-none position-fixed top-0 start-0 w-100 h-100 bg-dark z-50 d-flex flex-column align-items-center justify-content-center" style="--bs-bg-opacity: .95; z-index: 9999;">
+    <button id="closeMenuBtn" class="position-absolute top-0 end-0 m-4 btn btn-link text-white p-2">
+      <i data-feather="x" style="width: 32px; height: 32px;"></i>
+    </button>
+    
+    <nav class="d-flex flex-column gap-4 text-center">
+      <a href="index.html" class="text-white fs-2 text-decoration-none fw-bold hover-warning">Home</a>
+      <a href="menu.html" class="text-white fs-2 text-decoration-none fw-bold hover-warning">Menu</a>
+      <a href="about.html" class="text-white fs-2 text-decoration-none fw-bold hover-warning">About</a>
+      <a href="contact.html" class="text-white fs-2 text-decoration-none fw-bold hover-warning">Contact</a>
+      <div class="border-top border-secondary w-50 mx-auto my-2"></div>
+      <a href="login.html" id="authLink" class="text-warning fs-3 text-decoration-none fw-bold">Login</a>
+      <a href="#" id="logoutLink" class="text-secondary fs-4 text-decoration-none d-none">Logout</a>
+    </nav>
+  </div>
+
+  <!-- Quick Actions Bar -->
+  <div class="action-bar border-bottom bg-light py-2">
+    <div class="container d-flex justify-content-center gap-2">
+      <a href="menu.html" class="btn btn-warning btn-sm fw-bold">Order Now</a>
+      <a href="menu.html" class="btn btn-outline-warning btn-sm fw-bold">Explore Menu</a>
+    </div>
+  </div>
+
+  <!-- BOOTSTRAP MENU CONTENT -->
+  <main class="container my-5">
+    <h2 class="text-center text-danger fw-bold mb-5 display-5">Our Dishes</h2>
+    <div class="row g-4">
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm food-card">
+          <img src="images/sisig.jpg" alt="Sisig" class="card-img-top" style="height: 200px; object-fit: cover;">
+          <div class="card-body">
+            <h3 class="card-title fw-bold">Sizzling Sisig</h3>
+            <p class="card-text text-muted">Crispy pork sisig with onions and special sauce</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="fs-4 text-danger fw-bold">₱380</span>
+              <button class="btn btn-danger">Order Now</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm food-card">
+          <img src="images/adobo.jpg" alt="Adobo" class="card-img-top" style="height: 200px; object-fit: cover;">
+          <div class="card-body">
+            <h3 class="card-title fw-bold">Chicken Adobo</h3>
+            <p class="card-text text-muted">Classic Filipino adobo with tender chicken</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="fs-4 text-danger fw-bold">₱350</span>
+              <button class="btn btn-danger">Order Now</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm food-card">
+          <img src="images/pata.jpg" alt="Crispy Pata" class="card-img-top" style="height: 200px; object-fit: cover;">
+          <div class="card-body">
+            <h3 class="card-title fw-bold">Crispy Pata</h3>
+            <p class="card-text text-muted">Golden crispy pork knuckle with dipping sauce</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="fs-4 text-danger fw-bold">₱450</span>
+              <button class="btn btn-danger">Order Now</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm food-card">
+          <img src="images/karekare.jpg" alt="Kare-Kare" class="card-img-top" style="height: 200px; object-fit: cover;">
+          <div class="card-body">
+            <h3 class="card-title fw-bold">Kare-Kare</h3>
+            <p class="card-text text-muted">Traditional oxtail stew with peanut sauce and vegetables</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="fs-4 text-danger fw-bold">₱420</span>
+              <button class="btn btn-danger">Order Now</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm food-card">
+          <img src="images/pancit.jpg" alt="Pancit" class="card-img-top" style="height: 200px; object-fit: cover;">
+          <div class="card-body">
+            <h3 class="card-title fw-bold">Pancit Canton</h3>
+            <p class="card-text text-muted">Stir-fried egg noodles with mixed vegetables and meat</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="fs-4 text-danger fw-bold">₱280</span>
+              <button class="btn btn-danger">Order Now</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm food-card">
+          <img src="images/halo-halo.jpg" alt="Halo-Halo" class="card-img-top" style="height: 200px; object-fit: cover;">
+          <div class="card-body">
+            <h3 class="card-title fw-bold">Halo-Halo</h3>
+            <p class="card-text text-muted">Mixed shaved ice dessert with sweet beans and fruits</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="fs-4 text-danger fw-bold">₱180</span>
+              <button class="btn btn-danger">Order Now</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- BOOTSTRAP FOOTER -->
+  <footer class="bg-dark text-white py-4 text-center">
+    <div class="container">
+      <p class="mb-0">© 2025 ChillBites</p>
+    </div>
+  </footer>
+
+  <!-- ORDER MODAL -->
+  <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="orderModalLabel">
+            <i data-feather="shopping-cart" class="me-2"></i>
+            Complete Your Order
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="orderForm">
+            <!-- Order Summary -->
+            <div class="order-summary p-4 mb-4">
+              <h6 class="fw-bold text-danger mb-3">
+                <i data-feather="package" class="me-2"></i>
+                Order Summary
+              </h6>
+              <div id="orderItems" class="mb-3">
+                <!-- Order items will be populated here -->
+              </div>
+              <div class="d-flex justify-content-between align-items-center border-top pt-3">
+                <span class="h6 mb-0">Total Amount:</span>
+                <span class="h5 text-danger fw-bold mb-0" id="orderTotal">₱0</span>
+              </div>
+            </div>
+
+            <!-- Customer Information -->
+            <div class="row g-3 mb-4">
+              <div class="col-md-6">
+                <label for="customerName" class="form-label fw-semibold">Full Name *</label>
+                <input type="text" class="form-control form-control-lg" id="customerName" required>
+              </div>
+              <div class="col-md-6">
+                <label for="customerPhone" class="form-label fw-semibold">Phone Number *</label>
+                <input type="tel" class="form-control form-control-lg" id="customerPhone" required>
+              </div>
+              <div class="col-md-6">
+                <label for="customerEmail" class="form-label fw-semibold">Email Address *</label>
+                <input type="email" class="form-control form-control-lg" id="customerEmail" required>
+              </div>
+              <div class="col-md-6">
+                <label for="orderType" class="form-label fw-semibold">Order Type *</label>
+                <select class="form-select form-select-lg" id="orderType" required>
+                  <option value="">Select order type</option>
+                  <option value="delivery">Delivery</option>
+                  <option value="pickup">Pick-up</option>
+                  <option value="dinein">Dine-in</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Delivery Address (shown when delivery is selected) -->
+            <div id="deliveryAddress" class="delivery-options p-4 mb-4" style="display: none;">
+              <h6 class="fw-bold text-warning mb-3">
+                <i data-feather="map-pin" class="me-2"></i>
+                Delivery Address
+              </h6>
+              <div class="row g-3">
+                <div class="col-12">
+                  <label for="streetAddress" class="form-label">Street Address *</label>
+                  <input type="text" class="form-control" id="streetAddress">
+                </div>
+                <div class="col-md-6">
+                  <label for="barangay" class="form-label">Barangay *</label>
+                  <input type="text" class="form-control" id="barangay">
+                </div>
+                <div class="col-md-6">
+                  <label for="city" class="form-label">City *</label>
+                  <input type="text" class="form-control" id="city">
+                </div>
+                <div class="col-md-6">
+                  <label for="zipCode" class="form-label">ZIP Code *</label>
+                  <input type="text" class="form-control" id="zipCode">
+                </div>
+                <div class="col-md-6">
+                  <label for="landmark" class="form-label">Landmark (Optional)</label>
+                  <input type="text" class="form-control" id="landmark" placeholder="Near SM Mall, etc.">
+                </div>
+              </div>
+            </div>
+
+            <!-- Payment Options -->
+            <div class="payment-options p-4 mb-4">
+              <h6 class="fw-bold text-info mb-3">
+                <i data-feather="credit-card" class="me-2"></i>
+                Payment Method
+              </h6>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="paymentMethod" id="cod" value="cod" checked>
+                    <label class="form-check-label fw-semibold" for="cod">
+                      <i data-feather="dollar-sign" class="me-1"></i>
+                      Cash on Delivery
+                    </label>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="paymentMethod" id="gcash" value="gcash">
+                    <label class="form-check-label fw-semibold" for="gcash">
+                      <i data-feather="smartphone" class="me-1"></i>
+                      GCash
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Special Instructions -->
+            <div class="mb-4">
+              <label for="specialInstructions" class="form-label fw-semibold">Special Instructions (Optional)</label>
+              <textarea class="form-control" id="specialInstructions" rows="3" placeholder="Any allergies, preferences, or special requests..."></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-order" onclick="submitOrder()">
+            <i data-feather="check-circle" class="me-2"></i>
+            Place Order
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>feather.replace()</script>
+  <script src="scripts/script.js?v=4.0"></script>
+</body>
+</html>

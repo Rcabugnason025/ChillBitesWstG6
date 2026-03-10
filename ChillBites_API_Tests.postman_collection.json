@@ -1,0 +1,60 @@
+{
+	"info": {
+		"_postman_id": "chillbites-api-testing",
+		"name": "ChillBites API Tests (Milestone 1)",
+		"description": "API tests for TheMealDB integration in ChillBites project.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "TC-001: Fetch Random Meal (Success)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://www.themealdb.com/api/json/v1/1/random.php",
+					"protocol": "https",
+					"host": [
+						"www",
+						"themealdb",
+						"com"
+					],
+					"path": [
+						"api",
+						"json",
+						"v1",
+						"1",
+						"random.php"
+					]
+				},
+				"description": "Fetches a random meal from TheMealDB. Should return 200 OK and a JSON object with meal details."
+			},
+			"response": []
+		},
+		{
+			"name": "TC-002: Invalid Endpoint (Error Handling)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://www.themealdb.com/api/json/v1/1/invalid_endpoint.php",
+					"protocol": "https",
+					"host": [
+						"www",
+						"themealdb",
+						"com"
+					],
+					"path": [
+						"api",
+						"json",
+						"v1",
+						"1",
+						"invalid_endpoint.php"
+					]
+				},
+				"description": "Attempts to fetch from a non-existent endpoint. Should return 404 Not Found or null."
+			},
+			"response": []
+		}
+	]
+}

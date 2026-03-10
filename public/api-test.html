@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Integration Test Results - ChillBites</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="styles/main.css" rel="stylesheet">
+    <style>
+        .json-bg {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .status-badge {
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-danger sticky-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <img src="images/chillbites-logo.svg" alt="ChillBites Logo" width="40" height="40" class="d-inline-block align-text-top me-2">
+                <span>ChillBites</span>
+            </a>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h1 class="card-title text-danger mb-4">🧪 API Integration Test Page</h1>
+                <p class="lead">
+                    This page demonstrates the integration with <strong>TheMealDB API</strong>. 
+                    You can run the live test below to verify the connection without needing Postman.
+                </p>
+                <div class="alert alert-info">
+                    <strong>Developer:</strong> Rick Cabugnason (Individual Project)<br>
+                    <strong>API Endpoint:</strong> <code class="text-dark">https://www.themealdb.com/api/json/v1/1/random.php</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Test Section -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h3 class="h5 mb-0">🚀 Live Connection Test</h3>
+            </div>
+            <div class="card-body">
+                <p>Click the button below to send a real request to the API.</p>
+                <button id="runTestBtn" class="btn btn-primary btn-lg mb-3">
+                    <i data-feather="play"></i> Run Live Test
+                </button>
+
+                <div id="testResult" class="d-none">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="fw-bold me-2">Status:</span>
+                        <span id="statusCode" class="badge bg-success status-badge">200 OK</span>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h6>Response (JSON):</h6>
+                            <div id="jsonOutput" class="json-bg"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>Extracted Image:</h6>
+                            <div class="card">
+                                <img id="extractedImage" src="" class="card-img-top" alt="Result Image">
+                                <div class="card-body">
+                                    <small class="text-muted" id="imageCaption">No image loaded</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Static Report Section -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h3 class="h5 mb-0">📄 Documented Test Results</h3>
+            </div>
+            <div class="card-body">
+                <h4>Test Case 1: Fetch Random Meal</h4>
+                <p><strong>Objective:</strong> Verify that the API returns a valid meal object with an image URL.</p>
+                <ul>
+                    <li><strong>Method:</strong> GET</li>
+                    <li><strong>URL:</strong> https://www.themealdb.com/api/json/v1/1/random.php</li>
+                    <li><strong>Result:</strong> Passed ✅</li>
+                </ul>
+                <hr>
+                <h4>Test Case 2: Error Handling</h4>
+                <p><strong>Objective:</strong> Verify system behavior when API is unreachable.</p>
+                <ul>
+                    <li><strong>Simulation:</strong> Disconnected network / Invalid URL</li>
+                    <li><strong>Behavior:</strong> System catches error and displays user-friendly alert.</li>
+                    <li><strong>Result:</strong> Passed ✅</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white text-center py-3 mt-5">
+        <p class="mb-0">&copy; 2026 ChillBites by Rick Cabugnason</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script>
+        feather.replace();
+
+        document.getElementById('runTestBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('runTestBtn');
+            const resultDiv = document.getElementById('testResult');
+            const jsonOutput = document.getElementById('jsonOutput');
+            const statusCode = document.getElementById('statusCode');
+            const img = document.getElementById('extractedImage');
+            const caption = document.getElementById('imageCaption');
+
+            // Reset UI
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Testing...';
+            resultDiv.classList.add('d-none');
+
+            try {
+                const startTime = performance.now();
+                const response = await fetch('https://www.themealdb.com/api/json/v1/1/random.php');
+                const endTime = performance.now();
+                
+                const data = await response.json();
+                
+                // Show Result
+                resultDiv.classList.remove('d-none');
+                
+                // Update Status
+                if (response.ok) {
+                    statusCode.className = 'badge bg-success status-badge';
+                    statusCode.textContent = `${response.status} OK (${Math.round(endTime - startTime)}ms)`;
+                } else {
+                    statusCode.className = 'badge bg-danger status-badge';
+                    statusCode.textContent = `${response.status} Error`;
+                }
+
+                // Update JSON
+                jsonOutput.textContent = JSON.stringify(data, null, 4);
+
+                // Update Image
+                if (data.meals && data.meals[0]) {
+                    img.src = data.meals[0].strMealThumb;
+                    caption.textContent = data.meals[0].strMeal;
+                }
+
+            } catch (error) {
+                resultDiv.classList.remove('d-none');
+                statusCode.className = 'badge bg-danger status-badge';
+                statusCode.textContent = 'Network Error';
+                jsonOutput.textContent = error.toString();
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i data-feather="refresh-cw"></i> Run Test Again';
+                feather.replace();
+            }
+        });
+    </script>
+</body>
+</html>

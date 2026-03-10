@@ -1,0 +1,62 @@
+{
+  "menu": [
+    {
+      "id": 1,
+      "name": "Sizzling Sisig",
+      "price": 380,
+      "desc": "Crispy pork sisig with onions and special sauce",
+      "image": "images/sisig.jpg",
+      "available": true
+    },
+    {
+      "id": 2,
+      "name": "Chicken Adobo",
+      "price": 350,
+      "desc": "Classic Filipino adobo with tender chicken",
+      "image": "images/adobo.jpg",
+      "available": true
+    },
+    {
+      "id": 3,
+      "name": "Crispy Pata",
+      "price": 450,
+      "desc": "Golden crispy pork knuckle with dipping sauce",
+      "image": "images/pata.jpg",
+      "available": true
+    },
+    {
+      "id": 4,
+      "name": "Kare-Kare",
+      "price": 420,
+      "desc": "Oxtail stew in rich peanut sauce with vegetables",
+      "image": "images/karekare.jpg",
+      "available": true
+    },
+    {
+      "id": 5,
+      "name": "Pancit Canton",
+      "price": 250,
+      "desc": "Stir-fried noodles with meat and vegetables",
+      "image": "images/pancit.jpg",
+      "available": true
+    },
+    {
+      "id": 6,
+      "name": "Halo-Halo",
+      "price": 180,
+      "desc": "Ultimate Filipino dessert with crushed ice and toppings",
+      "image": "images/halo-halo.jpg",
+      "available": true
+    }
+  ],
+  "users": [
+    {
+      "id": 1,
+      "name": "Admin User",
+      "email": "admin@chillbites.com",
+      "password": "admin",
+      "role": "admin"
+    }
+  ],
+  "orders": []
+}
