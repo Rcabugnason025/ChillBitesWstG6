@@ -82,7 +82,7 @@
                 <button type="submit" class="btn btn-danger btn-lg rounded-pill">Log In</button>
               </div>
               <div class="d-grid mb-3">
-                <button type="button" class="btn btn-outline-dark btn-lg rounded-pill" onclick="window.firebaseGoogleLogin()">
+                <button type="button" class="btn btn-outline-dark btn-lg rounded-pill" onclick="window.firebaseGoogleLogin ? window.firebaseGoogleLogin() : alert('Google login is not ready yet. Please refresh the page.')">
                   <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo" width="20" class="me-2">
                   Continue with Google
                 </button>
@@ -103,6 +103,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>feather.replace()</script>
+  <script type="module" src="scripts/firebaseUploader.js"></script>
   <script src="scripts/script.js?v=4.0"></script>
 </body>
 </html>

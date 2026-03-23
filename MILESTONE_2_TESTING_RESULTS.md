@@ -9,7 +9,7 @@
 |-----------|-------------|-----------------|--------|
 | Auth-01 | User Login with valid credentials | JWT Token issued and stored in localStorage | PASS |
 | Auth-02 | User Login with invalid credentials | 401 Unauthorized error returned | PASS |
-| Auth-03 | Google OAuth Redirect | Redirects to Google Sign-in page successfully | PASS |
+| Auth-03 | Google Login (Firebase) | User signs in with Google and backend returns JWT | PASS |
 
 ## 2. Security & RBAC Testing
 | Test Case | Description | Expected Result | Status |
@@ -21,8 +21,8 @@
 ## 3. Cloud Storage Testing
 | Test Case | Description | Expected Result | Status |
 |-----------|-------------|-----------------|--------|
-| Store-01 | Image upload to AWS S3 | Image saved in bucket and secure URL returned | PASS |
-| Store-02 | Invalid file type upload | Multer error: "Only images are allowed" | PASS |
+| Store-01 | Image upload to Firebase Storage | Image uploaded and download URL saved to MongoDB | PASS |
+| Store-02 | Non-image file upload attempt | Upload is blocked or fails (image-only expected) | PASS |
 
 ## 4. Reliability Testing
 | Test Case | Description | Expected Result | Status |

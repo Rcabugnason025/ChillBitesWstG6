@@ -9,10 +9,10 @@ This plan outlines the integration of secure authentication, cloud storage, and 
 
 ## 2. Authentication & Authorization
 *   **JWT (JSON Web Tokens)**: Implemented for secure, stateless session management. Tokens are issued upon login and required for all protected API calls.
-*   **Google OAuth 2.0**: Integrated via Passport.js to allow users to sign in securely using their Google accounts.
+*   **Google Sign-In (Firebase Authentication)**: Users can sign in using their Google accounts through Firebase Authentication on the login page. The client sends a Firebase ID token to the backend, the backend verifies it, and then issues the app’s JWT for API access.
 *   **RBAC (Role-Based Access Control)**: Middleware-level checks ensure that only users with the `isAdmin` flag can access menu management features (Add/Edit/Delete).
 
-## 3. Cloud File Storage (AWS S3)
+## 3. Cloud File Storage (Firebase Storage)
 *   **Storage Solution**: Firebase Storage is used for storing and serving dish images.
 *   **Implementation**: Admin dashboard uploads images to Firebase Storage and saves the returned download URL in MongoDB.
 *   **Retrieval**: Images are displayed using the stored download URL.

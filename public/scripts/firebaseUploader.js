@@ -20,16 +20,10 @@ if (firebaseConfig && firebaseConfig.apiKey) {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
-      // Send user info to backend to create session/token
-      const response = await fetch('/api/users/auth/google-callback', {
+      const idToken = await user.getIdToken();
+      const response = await fetch('/api/users/google-login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: user.email,
-          name: user.displayName,
-          googleId: user.uid,
-          avatar: user.photoURL
-        })
+        headers: { 'Authorization': `Bearer ${idToken}` }
       });
       const data = await response.json();
       if (response.ok) {

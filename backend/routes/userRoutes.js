@@ -4,6 +4,7 @@ const {
   authUser,
   registerUser,
   getUserProfile,
+  googleLogin,
 } = require('../controllers/userController');
 const passport = require('passport');
 const generateToken = require('../utils/generateToken');
@@ -11,6 +12,7 @@ require('../config/passport');
 
 router.post('/', registerUser);
 router.post('/login', authUser);
+router.post('/google-login', googleLogin);
 
 // Google OAuth routes
 router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'], session: false }));

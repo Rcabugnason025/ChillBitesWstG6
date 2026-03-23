@@ -1,5 +1,7 @@
 const User = require('../models/User');
 const generateToken = require('../utils/generateToken');
+const crypto = require('crypto');
+const verifyFirebaseIdToken = require('../utils/verifyFirebaseIdToken');
 
 // Login user
 const authUser = async (req, res) => {
@@ -74,8 +76,49 @@ const getUserProfile = async (req, res) => {
   }
 };
 
+const googleLogin = async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization || '';
+    const hasBearer = authHeader.startsWith('Bearer ');
+    const idToken = hasBearer ? authHeader.slice('Bearer '.length) : null;
+    if (!idToken) {
+      return res.status(400).json({ message: 'Missing Firebase ID token' });
+    }
+ 
+    const projectId = process.env.FIREBASE_PROJECT_ID || 'chillbites-final';
+    const decoded = await verifyFirebaseIdToken(idToken, projectId);
+ 
+    const email = decoded.email;
+    if (!email) {
+      return res.status(400).json({ message: 'Google account has no email' });
+    }
+ 
+    let user = await User.findOne({ email });
+    if (!user) {
+      const usernameFromEmail = email.split('@')[0];
+      const randomPassword = crypto.randomBytes(24).toString('hex');
+      user = await User.create({
+        username: decoded.name || usernameFromEmail,
+        email,
+        password: randomPassword,
+      });
+    }
+ 
+    return res.json({
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+      isAdmin: user.isAdmin,
+      token: generateToken(user._id),
+    });
+  } catch (error) {
+    return res.status(401).json({ message: error.message || 'Google login failed' });
+  }
+};
+ 
 module.exports = {
   authUser,
   registerUser,
   getUserProfile,
+  googleLogin,
 };

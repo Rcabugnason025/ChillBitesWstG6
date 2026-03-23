@@ -40,11 +40,10 @@ I've added a centralized middleware to handle all errors consistently across the
     *   `POST /api/menu`: Admin only (Protected)
     *   `PUT /api/menu/:id`: Admin only (Protected)
     *   `DELETE /api/menu/:id`: Admin only (Protected)
-    *   `POST /api/menu/upload`: Admin only (Protected, for file uploads to S3)
 *   **User API:**
     *   `POST /api/users/login`: Public (JWT Issued)
     *   `POST /api/users`: Public (JWT Issued)
-    *   `GET /api/users/auth/google`: Public (OAuth)
+    *   `POST /api/users/google-login`: Public (Firebase Google Sign-In → JWT Issued)
 *   **Order API:**
     *   `POST /api/orders`: User only (Protected)
 

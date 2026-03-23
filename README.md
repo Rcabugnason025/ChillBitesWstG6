@@ -52,7 +52,7 @@ Make sure you have **Node.js** installed on your machine.
 ## Features & Requirements (Milestone 2)
 
 - **Authentication**:
-  - **Google OAuth**: Users can sign in using their Google accounts (configured via Firebase & Passport).
+  - **Google Login**: Users can sign in using their Google accounts (Firebase Authentication, then the backend issues a JWT).
   - **JWT (JSON Web Tokens)**: Secure session management for logged-in users.
   - **Role-Based Access Control (RBAC)**: Only Admins can access the dashboard to add/delete dishes.
 

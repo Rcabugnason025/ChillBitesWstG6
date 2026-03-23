@@ -23,9 +23,10 @@ To test the **Admin Dashboard** and **Image Upload (Firebase)** features:
 Once logged in, you can go to the **Admin Panel** to try adding a new dish. The image will be uploaded to my Firebase Storage automatically.
 
 ## 3. Google OAuth
-I have configured the Google Login. It should work on `localhost:5000`.
-- If you want to test the full flow, you can click "Sign in with Google" on the login page.
-- You will need to add your own `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in the `.env` file if you want to run the backend auth flow yourself, OR you can rely on the frontend integration I added which works out of the box.
+Google Login is enabled using Firebase Authentication.
+- You can click "Continue with Google" on the login page.
+- After signing in, the backend verifies the Firebase ID token and returns the app JWT.
+- If needed, set `FIREBASE_PROJECT_ID=chillbites-final` in `.env` (default is already `chillbites-final`).
 
 ## 4. Firebase Configuration
 You don't need to do anything for this!
