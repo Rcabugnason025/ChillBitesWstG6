@@ -1,5 +1,11 @@
 # ChillBites
 
+## MS2 Submission Links
+- Finalized Integration Plan: https://github.com/Rcabugnason025/ChillBitesWstG6/blob/master/MILESTONE_2_INTEGRATION_PLAN.md
+- Testing Results: https://github.com/Rcabugnason025/ChillBitesWstG6/blob/master/MILESTONE_2_TESTING_RESULTS.md
+- Deployed App (Render): https://chillbiteswstg6.onrender.com
+- Repository: https://github.com/Rcabugnason025/ChillBitesWstG6
+
 Welcome to ChillBites! This is my project for our Web Development course. It's a full-stack food delivery website where I've put together some of my favorite Filipino dishes.
 
 ## Project Structure (MVC)
