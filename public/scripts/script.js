@@ -152,6 +152,22 @@ async function loadAdminMenu() {
   feather.replace();
 }
 
+function openAddDishModal() {
+  const form = document.getElementById('menuForm');
+  const dishIdEl = document.getElementById('dishId');
+  const titleEl = document.getElementById('modalTitle');
+  const fileEl = document.getElementById('dishImageFile');
+  if (form) form.reset();
+  if (dishIdEl) dishIdEl.value = '';
+  if (titleEl) titleEl.textContent = 'Add New Dish';
+  if (fileEl) fileEl.value = '';
+  const modalEl = document.getElementById('addMenuModal');
+  if (modalEl && window.bootstrap && bootstrap.Modal) {
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
+  }
+}
+
 async function saveDish() {
   const id = document.getElementById('dishId').value;
   const name = document.getElementById('dishName').value;
