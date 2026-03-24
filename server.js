@@ -19,7 +19,13 @@ connectDB();
 const app = express();
 
 // Middleware
-app.use(helmet({ contentSecurityPolicy: false }));
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+    crossOriginOpenerPolicy: { policy: 'same-origin-allow-popups' },
+    crossOriginEmbedderPolicy: false,
+  })
+);
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('public'));

@@ -234,7 +234,15 @@ async function saveDish() {
       // Refresh table
       loadAdminMenu();
     } else {
-      alert('Failed to save dish');
+      let errorMessage = 'Failed to save dish';
+      try {
+        const errorData = await response.json();
+        if (errorData && errorData.message) errorMessage = errorData.message;
+        if (errorData && Array.isArray(errorData.errors) && errorData.errors[0] && errorData.errors[0].msg) {
+          errorMessage = errorData.errors[0].msg;
+        }
+      } catch (_) {}
+      alert(errorMessage);
     }
   } catch (error) {
     console.error('Error saving dish:', error);

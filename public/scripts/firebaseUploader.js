@@ -42,6 +42,11 @@ if (firebaseConfig && firebaseConfig.apiKey) {
 
   window.firebaseGoogleLogin = async () => {
     try {
+      const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      if (!isLocalhost) {
+        await signInWithRedirect(auth, googleProvider);
+        return;
+      }
       const result = await signInWithPopup(auth, googleProvider);
       await finishGoogleLogin(result.user);
     } catch (error) {
