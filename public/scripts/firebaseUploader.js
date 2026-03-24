@@ -1,19 +1,26 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
-import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 import firebaseConfig from "./firebaseConfig.js";
 
 if (firebaseConfig && firebaseConfig.apiKey) {
-  const app = initializeApp(firebaseConfig);
-  const storage = getStorage(app);
-  const auth = getAuth(app);
-  const googleProvider = new GoogleAuthProvider();
-  googleProvider.setCustomParameters({ prompt: 'select_account' });
+  let app = null;
+  let storage = null;
+  let auth = null;
+  let googleProvider = null;
+  try {
+    app = initializeApp(firebaseConfig);
+    storage = getStorage(app);
+    auth = getAuth(app);
+    googleProvider = new GoogleAuthProvider();
+    googleProvider.setCustomParameters({ prompt: 'select_account' });
+  } catch (e) {
+    window.firebaseUploadImage = null;
+    window.firebaseGoogleLogin = null;
+  }
 
   window.firebaseUploadImage = async (file) => {
-    if (!auth.currentUser) {
-      await signInAnonymously(auth);
-    }
+    if (!storage) throw new Error('Firebase is not initialized');
     const fileName = `${Date.now()}-${file.name}`;
     const fileRef = ref(storage, `menu/${fileName}`);
     await uploadBytes(fileRef, file, { contentType: file.type });
@@ -44,6 +51,7 @@ if (firebaseConfig && firebaseConfig.apiKey) {
     .catch(() => null);
 
   window.firebaseGoogleLogin = async () => {
+    if (!auth || !googleProvider) return;
     await signInWithRedirect(auth, googleProvider);
   };
 } else {

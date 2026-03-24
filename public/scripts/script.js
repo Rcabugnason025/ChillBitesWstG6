@@ -186,8 +186,10 @@ async function saveDish() {
       image = await window.firebaseUploadImage(imageFileInput.files[0]);
       if (imageInput) imageInput.value = image;
     } catch (error) {
-      alert('Failed to upload image. Please try again.');
-      return;
+      if (!image) {
+        alert('Failed to upload image. Please try again.');
+        return;
+      }
     }
   }
 
