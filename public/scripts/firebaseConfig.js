@@ -1,5 +1,5 @@
 export default {
-  apiKey: "AIzaSyD0lJvmnyrqtcLiQybWkzUHQf12_sEcb6U",
+  apiKey: "AIzaSyD01JvmnyrqtcLiQybWkzUHQf12_sEcb6U",
   authDomain: "chillbites-final.firebaseapp.com",
   projectId: "chillbites-final",
   storageBucket: "chillbites-final.appspot.com",
