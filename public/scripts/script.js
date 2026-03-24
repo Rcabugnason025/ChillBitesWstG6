@@ -92,7 +92,7 @@ async function renderMenu() {
   menuGrid.innerHTML = availableItems.map(item => `
     <div class="col-12 col-md-6 col-lg-4">
       <div class="card h-100 shadow-sm food-card">
-        <img src="${item.image}" alt="${item.name}" class="card-img-top" style="height: 200px; object-fit: cover;" onerror="this.onerror=null; this.src='images/chillbites-logo.svg';">
+        <img src="${item.image}" alt="${item.name}" class="card-img-top" style="height: 200px; object-fit: cover;" onerror="this.onerror=null; this.src='images/chillbites-logo.jpg';">
         <div class="card-body">
           <h3 class="card-title fw-bold">${item.name}</h3>
           <p class="card-text text-muted">${item.desc}</p>
@@ -118,7 +118,7 @@ async function loadAdminMenu() {
   tableBody.innerHTML = menu.map(item => `
     <tr>
       <td class="ps-4">
-        <img src="${item.image}" alt="${item.name}" class="rounded" style="width: 50px; height: 50px; object-fit: cover;" onerror="this.onerror=null; this.src='images/chillbites-logo.svg';">
+        <img src="${item.image}" alt="${item.name}" class="rounded" style="width: 50px; height: 50px; object-fit: cover;" onerror="this.onerror=null; this.src='images/chillbites-logo.jpg';">
       </td>
       <td class="fw-semibold">${item.name}</td>
       <td class="text-muted small text-truncate" style="max-width: 150px;">${item.desc}</td>
