@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
-import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 import firebaseConfig from "./firebaseConfig.js";
 
 if (firebaseConfig && firebaseConfig.apiKey) {
@@ -18,6 +18,16 @@ if (firebaseConfig && firebaseConfig.apiKey) {
     window.firebaseUploadImage = null;
     window.firebaseGoogleLogin = null;
   }
+
+  const getSafeRedirectTarget = () => {
+    const fromQuery = new URLSearchParams(window.location.search).get('redirect');
+    const fromSession = sessionStorage.getItem('postLoginRedirect');
+    const candidate = (fromQuery || fromSession || '').trim();
+    if (!candidate) return null;
+    if (!candidate.endsWith('.html')) return null;
+    if (candidate.includes('login.html')) return null;
+    return candidate;
+  };
 
   window.firebaseUploadImage = async (file) => {
     if (!storage) throw new Error('Firebase is not initialized');
@@ -38,7 +48,9 @@ if (firebaseConfig && firebaseConfig.apiKey) {
       throw new Error(data.message || 'Google Login failed');
     }
     localStorage.setItem('currentUser', JSON.stringify(data));
-    window.location.href = data.isAdmin ? 'admin.html' : 'index.html';
+    sessionStorage.removeItem('postLoginRedirect');
+    const redirectTo = data.isAdmin ? 'admin.html' : (getSafeRedirectTarget() || 'index.html');
+    window.location.href = redirectTo;
   };
 
   getRedirectResult(auth)
@@ -48,10 +60,26 @@ if (firebaseConfig && firebaseConfig.apiKey) {
       }
       return null;
     })
-    .catch(() => null);
+    .catch((err) => {
+      const msg = err && err.message ? err.message : 'Google login did not finish.';
+      alert(`Google login failed: ${msg}`);
+    });
+
+  onAuthStateChanged(auth, (user) => {
+    const alreadyLoggedIn = !!localStorage.getItem('currentUser');
+    if (!user || alreadyLoggedIn) return;
+    const onLoginPage = window.location.pathname.endsWith('/login.html') || window.location.pathname.endsWith('login.html');
+    if (!onLoginPage) return;
+    finishGoogleLogin(user).catch((err) => {
+      const msg = err && err.message ? err.message : 'Google login failed.';
+      alert(`Google login failed: ${msg}`);
+    });
+  });
 
   window.firebaseGoogleLogin = async () => {
     if (!auth || !googleProvider) return;
+    const redirectTarget = new URLSearchParams(window.location.search).get('redirect');
+    if (redirectTarget) sessionStorage.setItem('postLoginRedirect', redirectTarget);
     await signInWithRedirect(auth, googleProvider);
   };
 } else {

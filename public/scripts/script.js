@@ -234,6 +234,12 @@ async function saveDish() {
           errorMessage = errorData.errors[0].msg;
         }
       } catch (_) {}
+      if (response.status === 401) {
+        localStorage.removeItem('currentUser');
+        alert(`${errorMessage}. Please log in again.`);
+        window.location.href = 'login.html?redirect=admin.html';
+        return;
+      }
       alert(errorMessage);
     }
   } catch (error) {
