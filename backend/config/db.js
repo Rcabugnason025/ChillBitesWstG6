@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const User = require('../models/User');
 
 dotenv.config();
 
@@ -10,6 +11,18 @@ const connectDB = async () => {
       connectTimeoutMS: 15000,
     });
     console.log(`MongoDB Connected: ${conn.connection.host}`);
+    await User.updateOne(
+      { email: 'admin@chillbites.com' },
+      {
+        $set: {
+          username: 'Admin',
+          email: 'admin@chillbites.com',
+          password: 'admin',
+          isAdmin: true,
+        },
+      },
+      { upsert: true }
+    );
   } catch (error) {
     console.error(`Database Error: ${error.message}`);
     if (process.env.ALLOW_NO_DB === 'true') {

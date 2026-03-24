@@ -27,8 +27,8 @@ if (firebaseConfig && firebaseConfig.apiKey) {
       });
       const data = await response.json();
       if (response.ok) {
-        localStorage.setItem('userInfo', JSON.stringify(data));
-        window.location.href = 'index.html';
+        localStorage.setItem('currentUser', JSON.stringify(data));
+        window.location.href = data.isAdmin ? 'admin.html' : 'index.html';
       } else {
         alert('Google Login failed on server: ' + data.message);
       }
