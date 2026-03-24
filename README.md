@@ -8,6 +8,19 @@
 
 Welcome to ChillBites! This is my project for our Web Development course. It's a full-stack food delivery website where I've put together some of my favorite Filipino dishes.
 
+## Terminal Assessment (TA) Submission
+- GitHub Repo: https://github.com/Rcabugnason025/ChillBitesWstG6
+- Deployed App: https://chillbiteswstg6.onrender.com
+- Integration Plan (Google Sheet): https://docs.google.com/spreadsheets/d/1hTh-jT3mp_MpGMEMkA9eRlA61PEbaMxvWZ-AEyJt5vA/edit?usp=sharing
+- Database Plan + ERD (Google Doc): https://docs.google.com/document/d/1hc2Qgz0PrOgRKpJGYsyOC1QNCmB4XBSkDXbACceEFNk/edit?usp=sharing
+- Test Plan + Internal Testing Results (Google Sheet): https://docs.google.com/spreadsheets/d/1HM_jmW5mtscG2La6WcGPUVCSl8KE7i3V71Sky80mu14/edit?usp=sharing
+
+## Access Provision (Mentor Testing)
+- Admin account: admin@chillbites.com / admin
+- Admin dashboard: https://chillbiteswstg6.onrender.com/admin.html
+- Firebase project: chillbites-final (mentor access provided in Firebase console)
+- MongoDB Atlas: connection details provided for mentor testing (same DB used by the deployed app)
+
 ## Project Structure (MVC)
 I've organized the project using the MVC (Model-View-Controller) pattern to keep the backend logic separate from the frontend.
 
@@ -54,6 +67,11 @@ Make sure you have **Node.js** installed on your machine.
    ```
    - The server will start at `http://localhost:5000`.
    - You can open this link in your browser to see the website.
+
+## Quick Verification (TA)
+- Google login: open /login.html → Continue with Google → after consent it returns logged in.
+- Admin CRUD: login as admin → /admin.html → add/edit/delete dish → reflects on /menu.html.
+- Ordering: add multiple items → select Delivery → fill address → place order → /thank-you.html shows submitted details.
 
 ## Features & Requirements (Milestone 2)
 
