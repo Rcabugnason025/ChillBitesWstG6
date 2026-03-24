@@ -68,8 +68,6 @@ if (firebaseConfig && firebaseConfig.apiKey) {
   onAuthStateChanged(auth, (user) => {
     const alreadyLoggedIn = !!localStorage.getItem('currentUser');
     if (!user || alreadyLoggedIn) return;
-    const onLoginPage = window.location.pathname.endsWith('/login.html') || window.location.pathname.endsWith('login.html');
-    if (!onLoginPage) return;
     finishGoogleLogin(user).catch((err) => {
       const msg = err && err.message ? err.message : 'Google login failed.';
       alert(`Google login failed: ${msg}`);
