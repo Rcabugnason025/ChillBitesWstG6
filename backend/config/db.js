@@ -48,6 +48,55 @@ const DEFAULT_MENU = [
     image: 'images/halo-halo.jpg',
     available: true,
   },
+  {
+    name: 'Adobong Sitaw',
+    price: 220,
+    desc: 'Yummy string beans cooked in soy sauce and vinegar',
+    image: 'images/Adobong sitaw.jpg',
+    available: true,
+  },
+  {
+    name: 'Ampalaya Con Carne',
+    price: 280,
+    desc: 'Bitter melon with savory beef strips',
+    image: 'images/Ampalaya Con Carne Recipe.jpg',
+    available: true,
+  },
+  {
+    name: 'Batchoy Tagalog',
+    price: 300,
+    desc: 'Hearty noodle soup with pork organs and cracklings',
+    image: 'images/Batchoy Tagalog.jpg',
+    available: true,
+  },
+  {
+    name: 'Escabeche',
+    price: 350,
+    desc: 'Sweet and sour fish with colorful vegetables',
+    image: 'images/Escabatche.jpg',
+    available: true,
+  },
+  {
+    name: 'Pinakbet',
+    price: 240,
+    desc: 'Mixed vegetables sautéed in shrimp paste',
+    image: 'images/Pinakbet.jpg',
+    available: true,
+  },
+  {
+    name: 'Pork Hamonado',
+    price: 380,
+    desc: 'Sweet pork pineapple stew that melts in your mouth',
+    image: 'images/Pork Hamonado.jpg',
+    available: true,
+  },
+  {
+    name: 'Tofu and Broccoli',
+    price: 200,
+    desc: 'Healthy tofu and broccoli stir-fry',
+    image: 'images/Tofu and Broccoli.jpg',
+    available: true,
+  },
 ];
 
 const connectDB = async () => {
@@ -70,9 +119,8 @@ const connectDB = async () => {
       { upsert: true }
     );
 
-    const menuCount = await Menu.countDocuments();
-    if (menuCount === 0) {
-      await Menu.insertMany(DEFAULT_MENU);
+    for (const item of DEFAULT_MENU) {
+      await Menu.updateOne({ name: item.name }, { $set: item }, { upsert: true });
     }
   } catch (error) {
     console.error(`Database Error: ${error.message}`);
