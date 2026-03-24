@@ -147,10 +147,12 @@ function openAddDishModal() {
   const dishIdEl = document.getElementById('dishId');
   const titleEl = document.getElementById('modalTitle');
   const fileEl = document.getElementById('dishImageFile');
+  const imageEl = document.getElementById('dishImage');
   if (form) form.reset();
   if (dishIdEl) dishIdEl.value = '';
   if (titleEl) titleEl.textContent = 'Add New Dish';
   if (fileEl) fileEl.value = '';
+  if (imageEl && !imageEl.value) imageEl.value = 'images/sisig.jpg';
   const modalEl = document.getElementById('addMenuModal');
   if (modalEl && window.bootstrap && bootstrap.Modal) {
     const modal = new bootstrap.Modal(modalEl);
@@ -449,6 +451,17 @@ function toggleDeliveryFields(orderType) {
   if (zipCode) zipCode.required = isDelivery;
 }
 
+function toggleGcashFields(paymentMethod) {
+  const gcashDetails = document.getElementById('gcashDetails');
+  const gcashNumber = document.getElementById('gcashNumber');
+  const gcashReference = document.getElementById('gcashReference');
+
+  const isGcash = paymentMethod === 'gcash';
+  if (gcashDetails) gcashDetails.style.display = isGcash ? 'block' : 'none';
+  if (gcashNumber) gcashNumber.required = isGcash;
+  if (gcashReference) gcashReference.required = isGcash;
+}
+
 // Order Modal Functions
 function showOrderModal() {
   const modal = new bootstrap.Modal(document.getElementById('orderModal'));
@@ -468,6 +481,16 @@ function showOrderModal() {
   if (orderTypeSelect) {
     toggleDeliveryFields(orderTypeSelect.value);
     orderTypeSelect.onchange = () => toggleDeliveryFields(orderTypeSelect.value);
+  }
+
+  const paymentMethodRadios = document.querySelectorAll('input[name="paymentMethod"]');
+  if (paymentMethodRadios && paymentMethodRadios.length) {
+    let current = 'cod';
+    paymentMethodRadios.forEach((r) => {
+      if (r && r.checked) current = r.value;
+      r.onchange = () => toggleGcashFields(r.value);
+    });
+    toggleGcashFields(current);
   }
   
   modal.show();
@@ -499,6 +522,16 @@ async function submitOrder() {
     return;
   }
 
+  const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+  if (paymentMethod === 'gcash') {
+    const gcashNumber = document.getElementById('gcashNumber')?.value || '';
+    const gcashReference = document.getElementById('gcashReference')?.value || '';
+    if (!gcashNumber.trim() || !gcashReference.trim()) {
+      alert('Please enter your GCash number and reference number.');
+      return;
+    }
+  }
+
   const shippingAddress =
     orderType === 'delivery'
       ? {
@@ -519,7 +552,13 @@ async function submitOrder() {
       menuItem: x.menuItem,
     })),
     shippingAddress,
-    paymentMethod: document.querySelector('input[name="paymentMethod"]:checked').value,
+    paymentMethod,
+    paymentDetails: paymentMethod === 'gcash'
+      ? {
+          gcashNumber: document.getElementById('gcashNumber')?.value || '',
+          referenceNumber: document.getElementById('gcashReference')?.value || '',
+        }
+      : undefined,
     totalPrice: calculateCartTotal(cart),
   };
   
@@ -538,6 +577,12 @@ async function submitOrder() {
       const customerPhoneVal = document.getElementById('customerPhone')?.value || '';
       const orderTypeVal = document.getElementById('orderType')?.value || 'pickup';
       const paymentMethodVal = document.querySelector('input[name="paymentMethod"]:checked')?.value || 'cod';
+      const paymentDetailsVal = paymentMethodVal === 'gcash'
+        ? {
+            gcashNumber: document.getElementById('gcashNumber')?.value || '',
+            referenceNumber: document.getElementById('gcashReference')?.value || '',
+          }
+        : null;
       const deliveryAddressObj = orderTypeVal === 'delivery'
         ? {
             street: document.getElementById('streetAddress')?.value || '',
@@ -556,7 +601,8 @@ async function submitOrder() {
         orderType: orderTypeVal,
         paymentMethod: paymentMethodVal,
         totalAmount: '₱' + orderData.totalPrice,
-        deliveryAddress: deliveryAddressObj
+        deliveryAddress: deliveryAddressObj,
+        paymentDetails: paymentDetailsVal
       }));
       localStorage.removeItem('orderCart');
       

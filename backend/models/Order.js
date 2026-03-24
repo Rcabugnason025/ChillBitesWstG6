@@ -32,6 +32,10 @@ const orderSchema = new mongoose.Schema({
     required: true,
     default: 'Cash on Delivery',
   },
+  paymentDetails: {
+    gcashNumber: { type: String },
+    referenceNumber: { type: String },
+  },
   status: {
     type: String,
     required: true,

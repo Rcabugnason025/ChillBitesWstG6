@@ -64,6 +64,10 @@
                   <h6 class="fw-bold text-warning mb-3">Delivery Details</h6>
                   <p><strong>Order Type:</strong> <span id="orderType"></span></p>
                   <p><strong>Payment Method:</strong> <span id="paymentMethod"></span></p>
+                  <div id="gcashDetailsSection" style="display: none;">
+                    <p class="mb-1"><strong>GCash No.:</strong> <span id="gcashNumber"></span></p>
+                    <p class="mb-0"><strong>Reference No.:</strong> <span id="gcashReference"></span></p>
+                  </div>
                   <p><strong>Estimated Time:</strong> <span id="estimatedTime"></span></p>
                   <p><strong>Total Amount:</strong> <span id="totalAmount" class="text-danger fw-bold"></span></p>
                 </div>
@@ -151,6 +155,12 @@
         document.getElementById('orderType').textContent = orderData.orderType.charAt(0).toUpperCase() + orderData.orderType.slice(1);
         document.getElementById('paymentMethod').textContent = orderData.paymentMethod === 'cod' ? 'Cash on Delivery' : 'GCash';
         document.getElementById('totalAmount').textContent = orderData.totalAmount;
+
+        if (orderData.paymentMethod === 'gcash' && orderData.paymentDetails) {
+          document.getElementById('gcashNumber').textContent = orderData.paymentDetails.gcashNumber || '';
+          document.getElementById('gcashReference').textContent = orderData.paymentDetails.referenceNumber || '';
+          document.getElementById('gcashDetailsSection').style.display = 'block';
+        }
         
         // Calculate estimated time based on order type
         let estimatedTime = '';
