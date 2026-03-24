@@ -81,11 +81,13 @@ const API_URL = `${window.location.origin}/api`;
 async function getMenu() {
   try {
     const response = await fetch(`${API_URL}/menu`);
-    const data = await response.json();
-    return data;
+    if (!response.ok) {
+      throw new Error(`Menu request failed (${response.status})`);
+    }
+    return await response.json();
   } catch (error) {
     console.error('Error fetching menu:', error);
-    return [];
+    return null;
   }
 }
 
@@ -94,6 +96,7 @@ async function renderMenu() {
   if (!menuGrid) return;
 
   const menu = await getMenu();
+  if (!Array.isArray(menu)) return;
   const availableItems = menu.filter(item => item.available);
 
   menuGrid.innerHTML = availableItems.map(item => `
@@ -121,6 +124,7 @@ async function loadAdminMenu() {
   if (!tableBody) return;
 
   const menu = await getMenu();
+  if (!Array.isArray(menu)) return;
   tableBody.innerHTML = menu.map(item => `
     <tr>
       <td class="ps-4">
