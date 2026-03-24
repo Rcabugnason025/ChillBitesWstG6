@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 import firebaseConfig from "./firebaseConfig.js";
 
 if (firebaseConfig && firebaseConfig.apiKey) {
@@ -11,6 +11,9 @@ if (firebaseConfig && firebaseConfig.apiKey) {
   googleProvider.setCustomParameters({ prompt: 'select_account' });
 
   window.firebaseUploadImage = async (file) => {
+    if (!auth.currentUser) {
+      await signInAnonymously(auth);
+    }
     const fileName = `${Date.now()}-${file.name}`;
     const fileRef = ref(storage, `menu/${fileName}`);
     await uploadBytes(fileRef, file, { contentType: file.type });
@@ -41,22 +44,7 @@ if (firebaseConfig && firebaseConfig.apiKey) {
     .catch(() => null);
 
   window.firebaseGoogleLogin = async () => {
-    try {
-      const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-      if (!isLocalhost) {
-        await signInWithRedirect(auth, googleProvider);
-        return;
-      }
-      const result = await signInWithPopup(auth, googleProvider);
-      await finishGoogleLogin(result.user);
-    } catch (error) {
-      if (error && (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user')) {
-        await signInWithRedirect(auth, googleProvider);
-        return;
-      }
-      console.error('Google Login Error:', error);
-      alert('Google Login failed: ' + (error.message || 'Unknown error'));
-    }
+    await signInWithRedirect(auth, googleProvider);
   };
 } else {
   window.firebaseUploadImage = null;

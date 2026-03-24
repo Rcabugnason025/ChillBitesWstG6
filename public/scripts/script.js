@@ -53,26 +53,15 @@ document.addEventListener("DOMContentLoaded", () => {
           }
           return;
         }
-        const card = btn.closest('.card');
-        const dishName = card.querySelector('.card-title').textContent;
-        const priceEl = card.querySelector('.card-text strong, .text-danger.fw-bold');
-        const dishPrice = priceEl ? priceEl.textContent : '₱0';
-        
-        // Store order data
-        const orderData = {
-          name: dishName,
-          price: dishPrice,
-          quantity: 1
-        };
-        
-        // Show order modal
-        showOrderModal(orderData);
+        const dishId = btn.getAttribute('data-id');
+        addDishToCartAndOpenModal(dishId);
       }
     });
   }
 });
 
 const API_URL = `${window.location.origin}/api`;
+let cachedMenuItems = null;
 
 // -------------------------------
 // Menu Management (CRUD)
@@ -97,6 +86,7 @@ async function renderMenu() {
 
   const menu = await getMenu();
   if (!Array.isArray(menu)) return;
+  cachedMenuItems = menu;
   const availableItems = menu.filter(item => item.available);
 
   menuGrid.innerHTML = availableItems.map(item => `
@@ -330,42 +320,146 @@ function logoutAdmin() {
   window.location.href = 'index.html';
 }
 
-// Order Modal Functions
-function showOrderModal(orderData) {
-  const modal = new bootstrap.Modal(document.getElementById('orderModal'));
-  
-  // Populate order summary
+function getOrderCart() {
+  try {
+    const data = JSON.parse(localStorage.getItem('orderCart'));
+    return Array.isArray(data) ? data : [];
+  } catch (_) {
+    return [];
+  }
+}
+
+function setOrderCart(cart) {
+  localStorage.setItem('orderCart', JSON.stringify(cart));
+}
+
+function addDishToCart(cart, dish) {
+  const existing = cart.find((x) => x.menuItem === dish._id);
+  if (existing) {
+    existing.quantity += 1;
+  } else {
+    cart.push({
+      menuItem: dish._id,
+      name: dish.name,
+      price: Number(dish.price),
+      quantity: 1,
+    });
+  }
+  return cart;
+}
+
+async function addDishToCartAndOpenModal(dishId) {
+  let menu = cachedMenuItems;
+  if (!Array.isArray(menu)) {
+    menu = await getMenu();
+  }
+  if (!Array.isArray(menu)) return;
+
+  const dish = menu.find((x) => x._id === dishId);
+  if (!dish) return;
+
+  const cart = addDishToCart(getOrderCart(), dish);
+  setOrderCart(cart);
+  showOrderModal();
+}
+
+function calculateCartTotal(cart) {
+  return cart.reduce((sum, item) => sum + Number(item.price) * Number(item.quantity), 0);
+}
+
+function renderCartIntoModal(cart) {
   const orderItems = document.getElementById('orderItems');
   const orderTotal = document.getElementById('orderTotal');
-  
-  orderItems.innerHTML = `
-    <div class="order-item-card p-3 mb-2">
-      <div class="d-flex justify-content-between align-items-center">
-        <div>
-          <h6 class="mb-1">${orderData.name}</h6>
-          <small class="text-muted">Quantity: ${orderData.quantity}</small>
-        </div>
-        <div class="text-end">
-          <strong class="text-danger">${orderData.price}</strong>
+  if (!orderItems || !orderTotal) return;
+
+  if (!cart.length) {
+    orderItems.innerHTML = '<p class="text-muted mb-0">No items yet.</p>';
+    orderTotal.textContent = '₱0';
+    return;
+  }
+
+  orderItems.innerHTML = cart
+    .map(
+      (item) => `
+      <div class="order-item-card p-3 mb-2 border rounded">
+        <div class="d-flex justify-content-between align-items-center gap-2">
+          <div class="flex-grow-1">
+            <h6 class="mb-1">${item.name}</h6>
+            <small class="text-muted">₱${item.price} each</small>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="updateCartQuantity('${item.menuItem}', -1)">-</button>
+            <input type="number" class="form-control form-control-sm text-center" style="width: 70px;" min="1" value="${item.quantity}" onchange="setCartQuantity('${item.menuItem}', this.value)">
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="updateCartQuantity('${item.menuItem}', 1)">+</button>
+            <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeFromCart('${item.menuItem}')">Remove</button>
+          </div>
         </div>
       </div>
-    </div>
-  `;
-  
-  orderTotal.textContent = orderData.price;
-  
-  // Show/hide delivery address based on order type (ONLY PICKUP ALLOWED NOW)
-  const orderTypeSelect = document.getElementById('orderType');
+    `
+    )
+    .join('');
+
+  orderTotal.textContent = `₱${calculateCartTotal(cart)}`;
+}
+
+function removeFromCart(menuItemId) {
+  const cart = getOrderCart().filter((x) => x.menuItem !== menuItemId);
+  setOrderCart(cart);
+  renderCartIntoModal(cart);
+}
+
+function setCartQuantity(menuItemId, rawValue) {
+  const qty = Math.max(1, parseInt(rawValue, 10) || 1);
+  const cart = getOrderCart().map((x) => (x.menuItem === menuItemId ? { ...x, quantity: qty } : x));
+  setOrderCart(cart);
+  renderCartIntoModal(cart);
+}
+
+function updateCartQuantity(menuItemId, delta) {
+  const cart = getOrderCart().map((x) => {
+    if (x.menuItem !== menuItemId) return x;
+    const nextQty = Math.max(1, Number(x.quantity) + Number(delta));
+    return { ...x, quantity: nextQty };
+  });
+  setOrderCart(cart);
+  renderCartIntoModal(cart);
+}
+
+function toggleDeliveryFields(orderType) {
   const deliveryAddressDiv = document.getElementById('deliveryAddress');
-  
+  const streetAddress = document.getElementById('streetAddress');
+  const barangay = document.getElementById('barangay');
+  const city = document.getElementById('city');
+  const zipCode = document.getElementById('zipCode');
+
+  const isDelivery = orderType === 'delivery';
+  if (deliveryAddressDiv) deliveryAddressDiv.style.display = isDelivery ? 'block' : 'none';
+
+  if (streetAddress) streetAddress.required = isDelivery;
+  if (barangay) barangay.required = isDelivery;
+  if (city) city.required = isDelivery;
+  if (zipCode) zipCode.required = isDelivery;
+}
+
+// Order Modal Functions
+function showOrderModal() {
+  const modal = new bootstrap.Modal(document.getElementById('orderModal'));
+
+  const cart = getOrderCart();
+  renderCartIntoModal(cart);
+
+  const user = getCurrentUser();
+  const customerName = document.getElementById('customerName');
+  const customerEmail = document.getElementById('customerEmail');
+  if (user) {
+    if (customerName && !customerName.value) customerName.value = user.username || '';
+    if (customerEmail && !customerEmail.value) customerEmail.value = user.email || '';
+  }
+
+  const orderTypeSelect = document.getElementById('orderType');
   if (orderTypeSelect) {
-    // Force Pickup as default and only option if possible
-    orderTypeSelect.value = 'pickup';
-    // Hide delivery fields just in case
-    if (deliveryAddressDiv) deliveryAddressDiv.style.display = 'none';
-    
-    // Disable listener for now as we are strictly pickup
-    // (Or keep it if we want to re-enable delivery later, but for now we enforce pickup)
+    toggleDeliveryFields(orderTypeSelect.value);
+    orderTypeSelect.onchange = () => toggleDeliveryFields(orderTypeSelect.value);
   }
   
   modal.show();
@@ -385,33 +479,40 @@ async function submitOrder() {
     return;
   }
 
-  // Collect order data
-  const orderItemsHTML = document.getElementById('orderItems').innerHTML;
-  // Extracting dish name and price from the modal HTML for simplicity in this demo
-  // In a real app, you'd pass the original objects
-  const dishName = document.querySelector('#orderItems h6').textContent;
-  const dishPrice = document.querySelector('#orderItems .text-danger').textContent.replace('₱', '');
-  
-  // Find the menu item by name to get its ID (simplified)
-  const menu = await getMenu();
-  const menuItem = menu.find(item => item.name === dishName);
+  const cart = getOrderCart();
+  if (!cart.length) {
+    alert('Your order is empty.');
+    return;
+  }
+
+  const orderType = document.getElementById('orderType').value;
+  if (!orderType) {
+    alert('Please select an order type.');
+    return;
+  }
+
+  const shippingAddress =
+    orderType === 'delivery'
+      ? {
+          address: document.getElementById('streetAddress').value,
+          city: document.getElementById('city').value,
+          postalCode: document.getElementById('zipCode').value,
+          barangay: document.getElementById('barangay').value,
+          landmark: (document.getElementById('landmark') && document.getElementById('landmark').value) || '',
+        }
+      : { address: orderType, city: 'N/A' };
 
   const orderData = {
     user: currentUser._id,
-    orderItems: [
-      {
-        name: dishName,
-        quantity: 1,
-        price: parseFloat(dishPrice),
-        menuItem: menuItem ? menuItem._id : null
-      }
-    ],
-    shippingAddress: {
-      address: 'Pickup', // Defaulting since we enforced pickup in modal
-      city: 'Store Location'
-    },
+    orderItems: cart.map((x) => ({
+      name: x.name,
+      quantity: x.quantity,
+      price: Number(x.price),
+      menuItem: x.menuItem,
+    })),
+    shippingAddress,
     paymentMethod: document.querySelector('input[name="paymentMethod"]:checked').value,
-    totalPrice: parseFloat(dishPrice)
+    totalPrice: calculateCartTotal(cart),
   };
   
   try {
@@ -430,6 +531,7 @@ async function submitOrder() {
         customerName: document.getElementById('customerName').value,
         totalAmount: '₱' + orderData.totalPrice
       }));
+      localStorage.removeItem('orderCart');
       
       // Close modal
       const modal = bootstrap.Modal.getInstance(document.getElementById('orderModal'));
