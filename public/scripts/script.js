@@ -533,11 +533,30 @@ async function submitOrder() {
     if (response.ok) {
       const createdOrder = await response.json();
       // Store order data for thank you page
+      const customerNameVal = document.getElementById('customerName')?.value || '';
+      const customerEmailVal = document.getElementById('customerEmail')?.value || '';
+      const customerPhoneVal = document.getElementById('customerPhone')?.value || '';
+      const orderTypeVal = document.getElementById('orderType')?.value || 'pickup';
+      const paymentMethodVal = document.querySelector('input[name="paymentMethod"]:checked')?.value || 'cod';
+      const deliveryAddressObj = orderTypeVal === 'delivery'
+        ? {
+            street: document.getElementById('streetAddress')?.value || '',
+            barangay: document.getElementById('barangay')?.value || '',
+            city: document.getElementById('city')?.value || '',
+            zipCode: document.getElementById('zipCode')?.value || '',
+            landmark: document.getElementById('landmark')?.value || ''
+          }
+        : null;
+
       localStorage.setItem('lastOrder', JSON.stringify({
-        ...orderData,
         orderId: createdOrder._id.slice(-6).toUpperCase(),
-        customerName: document.getElementById('customerName').value,
-        totalAmount: '₱' + orderData.totalPrice
+        customerName: customerNameVal,
+        customerPhone: customerPhoneVal,
+        customerEmail: customerEmailVal,
+        orderType: orderTypeVal,
+        paymentMethod: paymentMethodVal,
+        totalAmount: '₱' + orderData.totalPrice,
+        deliveryAddress: deliveryAddressObj
       }));
       localStorage.removeItem('orderCart');
       
