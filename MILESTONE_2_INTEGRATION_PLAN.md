@@ -20,7 +20,7 @@ This plan outlines the integration of secure authentication, cloud storage, and 
 ## 4. Security Enhancements
 *   **Helmet.js**: Integrated to secure HTTP headers and protect against common vulnerabilities like XSS and clickjacking.
 *   **Input Validation**: Used `express-validator` middleware to sanitize and validate all data sent to the backend (e.g., ensuring prices are numbers, names are non-empty).
-*   **Environment Variables**: All sensitive keys (Database URI, AWS Keys, JWT Secret) are managed through a `.env` file.
+*   **Environment Variables**: All sensitive values (Database URI, JWT secret, Firebase projectId for token verification) are managed through a `.env` file.
 
 ## 5. Centralized Error Handling
 *   **Middleware**: A unified error-handling middleware manages 404 Not Found and 500 Internal Server Error responses consistently across the application.
