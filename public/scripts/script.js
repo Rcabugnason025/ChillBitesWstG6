@@ -335,6 +335,9 @@ async function generateRandomImage() {
 }
 
 function logoutAdmin() {
+  try {
+    if (typeof window.firebaseLogout === 'function') window.firebaseLogout();
+  } catch (_) {}
   localStorage.removeItem('currentUser');
   window.location.href = 'index.html';
 }
@@ -691,6 +694,9 @@ function setCurrentUser(user) {
 }
 
 function logout() {
+  try {
+    if (typeof window.firebaseLogout === 'function') window.firebaseLogout();
+  } catch (_) {}
   localStorage.removeItem('currentUser');
   window.location.reload();
 }

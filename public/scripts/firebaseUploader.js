@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 import firebaseConfig from "./firebaseConfig.js?v=7";
 
 if (firebaseConfig && firebaseConfig.apiKey) {
@@ -55,6 +55,8 @@ if (firebaseConfig && firebaseConfig.apiKey) {
     }
     localStorage.setItem('currentUser', JSON.stringify(data));
     sessionStorage.removeItem('postLoginRedirect');
+    sessionStorage.removeItem('googleLoginInProgress');
+    sessionStorage.removeItem('googleLoginCompleting');
     const redirectTo = data.isAdmin ? 'admin.html' : (getSafeRedirectTarget() || 'index.html');
     window.location.href = redirectTo;
   };
@@ -73,6 +75,11 @@ if (firebaseConfig && firebaseConfig.apiKey) {
 
   onAuthStateChanged(auth, (user) => {
     if (!user) return;
+    const inProgress = sessionStorage.getItem('googleLoginInProgress') === '1';
+    if (!inProgress) return;
+    const completing = sessionStorage.getItem('googleLoginCompleting') === '1';
+    if (completing) return;
+    sessionStorage.setItem('googleLoginCompleting', '1');
     let stored = null;
     try {
       stored = JSON.parse(localStorage.getItem('currentUser'));
@@ -81,9 +88,14 @@ if (firebaseConfig && firebaseConfig.apiKey) {
     }
     const sameAccount = stored && stored.email && user.email && stored.email.toLowerCase() === user.email.toLowerCase();
     const hasAppToken = stored && typeof stored.token === 'string' && stored.token.length > 0;
-    if (sameAccount && hasAppToken) return;
+    if (sameAccount && hasAppToken) {
+      sessionStorage.removeItem('googleLoginCompleting');
+      sessionStorage.removeItem('googleLoginInProgress');
+      return;
+    }
 
     finishGoogleLogin(user).catch((err) => {
+      sessionStorage.removeItem('googleLoginCompleting');
       const msg = err && err.message ? err.message : 'Google login failed.';
       alert(`Google login failed: ${msg}`);
     });
@@ -93,6 +105,7 @@ if (firebaseConfig && firebaseConfig.apiKey) {
     if (!auth || !googleProvider) return;
     const redirectTarget = new URLSearchParams(window.location.search).get('redirect');
     if (redirectTarget) sessionStorage.setItem('postLoginRedirect', redirectTarget);
+    sessionStorage.setItem('googleLoginInProgress', '1');
     try {
       const result = await signInWithPopup(auth, googleProvider);
       if (result && result.user) {
@@ -109,7 +122,16 @@ if (firebaseConfig && firebaseConfig.apiKey) {
     }
     await signInWithRedirect(auth, googleProvider);
   };
+
+  window.firebaseLogout = async () => {
+    try {
+      sessionStorage.removeItem('googleLoginInProgress');
+      sessionStorage.removeItem('googleLoginCompleting');
+      if (auth) await signOut(auth);
+    } catch (_) {}
+  };
 } else {
   window.firebaseUploadImage = null;
   window.firebaseGoogleLogin = null;
+  window.firebaseLogout = null;
 }
