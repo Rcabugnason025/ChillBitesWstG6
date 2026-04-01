@@ -198,22 +198,27 @@ async function saveDish() {
   const dishData = { name, price: parseInt(price), desc, image, available };
   
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
     let response;
     if (id) {
       // Edit existing
       response = await fetch(`${API_URL}/menu/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentUser.token}` },
-        body: JSON.stringify(dishData)
+        body: JSON.stringify(dishData),
+        signal: controller.signal
       });
     } else {
       // Add new
       response = await fetch(`${API_URL}/menu`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentUser.token}` },
-        body: JSON.stringify(dishData)
+        body: JSON.stringify(dishData),
+        signal: controller.signal
       });
     }
+    clearTimeout(timeoutId);
 
     if (response.ok) {
       // Close modal
@@ -246,6 +251,10 @@ async function saveDish() {
     }
   } catch (error) {
     console.error('Error saving dish:', error);
+    if (error && error.name === 'AbortError') {
+      alert('Save Dish request timed out. Please refresh the page and try again.');
+      return;
+    }
     alert('An error occurred while saving the dish');
   }
 }

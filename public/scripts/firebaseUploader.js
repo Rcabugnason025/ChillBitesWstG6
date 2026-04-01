@@ -66,8 +66,17 @@ if (firebaseConfig && firebaseConfig.apiKey) {
     });
 
   onAuthStateChanged(auth, (user) => {
-    const alreadyLoggedIn = !!localStorage.getItem('currentUser');
-    if (!user || alreadyLoggedIn) return;
+    if (!user) return;
+    let stored = null;
+    try {
+      stored = JSON.parse(localStorage.getItem('currentUser'));
+    } catch (_) {
+      stored = null;
+    }
+    const sameAccount = stored && stored.email && user.email && stored.email.toLowerCase() === user.email.toLowerCase();
+    const hasAppToken = stored && typeof stored.token === 'string' && stored.token.length > 0;
+    if (sameAccount && hasAppToken) return;
+
     finishGoogleLogin(user).catch((err) => {
       const msg = err && err.message ? err.message : 'Google login failed.';
       alert(`Google login failed: ${msg}`);
