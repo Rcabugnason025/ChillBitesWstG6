@@ -43,9 +43,15 @@ if (firebaseConfig && firebaseConfig.apiKey) {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${idToken}` }
     });
-    const data = await response.json();
+    let data = null;
+    try {
+      data = await response.json();
+    } catch (_) {
+      data = null;
+    }
     if (!response.ok) {
-      throw new Error(data.message || 'Google Login failed');
+      const message = data && data.message ? data.message : `Google Login failed (${response.status})`;
+      throw new Error(message);
     }
     localStorage.setItem('currentUser', JSON.stringify(data));
     sessionStorage.removeItem('postLoginRedirect');

@@ -138,8 +138,11 @@ const googleLogin = async (req, res) => {
       return res.status(400).json({ message: 'Missing Firebase ID token' });
     }
  
-    const projectId = process.env.FIREBASE_PROJECT_ID || 'chillbites-final';
-    const decoded = await verifyFirebaseIdToken(idToken, projectId);
+    const allowedProjectIds = [
+      process.env.FIREBASE_PROJECT_ID,
+      'chillbites-final',
+    ].filter(Boolean);
+    const decoded = await verifyFirebaseIdToken(idToken, allowedProjectIds);
  
     const email = decoded.email;
     if (!email) {

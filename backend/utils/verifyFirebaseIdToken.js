@@ -49,11 +49,14 @@ async function getFirebaseCerts() {
   return cachedCerts;
 }
  
-async function verifyFirebaseIdToken(idToken, projectId) {
+async function verifyFirebaseIdToken(idToken, projectIdOrIds) {
   if (!idToken || typeof idToken !== 'string') {
     throw new Error('Missing Firebase ID token');
   }
-  if (!projectId) {
+  const allowedProjectIds = (Array.isArray(projectIdOrIds) ? projectIdOrIds : [projectIdOrIds])
+    .map((x) => (x ? String(x).trim() : ''))
+    .filter(Boolean);
+  if (!allowedProjectIds.length) {
     throw new Error('Missing Firebase projectId');
   }
  
@@ -70,8 +73,8 @@ async function verifyFirebaseIdToken(idToken, projectId) {
     throw new Error('Firebase ID token expired');
   }
  
-  const expectedIss = `https://securetoken.google.com/${projectId}`;
-  if (payload.aud !== projectId || payload.iss !== expectedIss) {
+  const expectedIssuers = allowedProjectIds.map((id) => `https://securetoken.google.com/${id}`);
+  if (!allowedProjectIds.includes(payload.aud) || !expectedIssuers.includes(payload.iss)) {
     throw new Error('Firebase ID token has invalid audience or issuer');
   }
  
