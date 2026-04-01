@@ -108,6 +108,27 @@ const getUserProfile = async (req, res) => {
   }
 };
 
+const normalizeUsername = (value) => {
+  if (!value) return '';
+  return String(value).trim().replace(/\s+/g, ' ');
+};
+
+const findUniqueUsername = async (baseUsername) => {
+  const base = normalizeUsername(baseUsername);
+  if (!base) return null;
+
+  const existing = await User.findOne({ username: base });
+  if (!existing) return base;
+
+  for (let i = 0; i < 10; i += 1) {
+    const candidate = `${base}-${crypto.randomBytes(2).toString('hex')}`;
+    const taken = await User.findOne({ username: candidate });
+    if (!taken) return candidate;
+  }
+
+  return `${base}-${Date.now()}`;
+};
+
 const googleLogin = async (req, res) => {
   try {
     const authHeader = req.headers.authorization || '';
@@ -129,8 +150,12 @@ const googleLogin = async (req, res) => {
     if (!user) {
       const usernameFromEmail = email.split('@')[0];
       const randomPassword = crypto.randomBytes(24).toString('hex');
+      const username =
+        (await findUniqueUsername(decoded.name)) ||
+        (await findUniqueUsername(usernameFromEmail)) ||
+        `user-${crypto.randomBytes(3).toString('hex')}`;
       user = await User.create({
-        username: decoded.name || usernameFromEmail,
+        username,
         email,
         password: randomPassword,
       });
