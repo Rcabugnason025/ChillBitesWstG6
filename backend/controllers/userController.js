@@ -129,6 +129,14 @@ const findUniqueUsername = async (baseUsername) => {
   return `${base}-${Date.now()}`;
 };
 
+const parseAdminEmails = () => {
+  const raw = [process.env.ADMIN_EMAIL, process.env.ADMIN_EMAILS].filter(Boolean).join(',');
+  return raw
+    .split(',')
+    .map((x) => String(x).trim().toLowerCase())
+    .filter(Boolean);
+};
+
 const googleLogin = async (req, res) => {
   try {
     const authHeader = req.headers.authorization || '';
@@ -162,6 +170,14 @@ const googleLogin = async (req, res) => {
         email,
         password: randomPassword,
       });
+    }
+
+    const emailLower = String(email).toLowerCase();
+    const adminEmails = parseAdminEmails();
+    const shouldBeAdmin = emailLower === 'admin@chillbites.com' || adminEmails.includes(emailLower);
+    if (shouldBeAdmin && !user.isAdmin) {
+      user.isAdmin = true;
+      await user.save();
     }
  
     return res.json({

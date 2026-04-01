@@ -352,9 +352,9 @@ async function generateRandomImage() {
   }
 }
 
-function logoutAdmin() {
+async function logoutAdmin() {
   try {
-    if (typeof window.firebaseLogout === 'function') window.firebaseLogout();
+    if (typeof window.firebaseLogout === 'function') await window.firebaseLogout();
   } catch (_) {}
   localStorage.removeItem('currentUser');
   window.location.href = 'index.html';
@@ -711,9 +711,9 @@ function setCurrentUser(user) {
   localStorage.setItem('currentUser', JSON.stringify(user));
 }
 
-function logout() {
+async function logout() {
   try {
-    if (typeof window.firebaseLogout === 'function') window.firebaseLogout();
+    if (typeof window.firebaseLogout === 'function') await window.firebaseLogout();
   } catch (_) {}
   localStorage.removeItem('currentUser');
   window.location.reload();
