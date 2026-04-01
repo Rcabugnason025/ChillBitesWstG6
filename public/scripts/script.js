@@ -222,8 +222,11 @@ async function saveDish() {
 
     if (response.ok) {
       // Close modal
-      const modal = bootstrap.Modal.getInstance(document.getElementById('addMenuModal'));
-      modal.hide();
+      const modalEl = document.getElementById('addMenuModal');
+      const modal = (modalEl && bootstrap && bootstrap.Modal)
+        ? (bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl))
+        : null;
+      if (modal) modal.hide();
       
       // Reset form
       document.getElementById('menuForm').reset();
@@ -233,17 +236,32 @@ async function saveDish() {
       // Refresh table
       loadAdminMenu();
     } else {
+      const status = response.status;
+      let raw = '';
+      try {
+        raw = await response.text();
+      } catch (_) {
+        raw = '';
+      }
       let errorMessage = 'Failed to save dish';
       try {
-        const errorData = await response.json();
+        const errorData = raw ? JSON.parse(raw) : null;
         if (errorData && errorData.message) errorMessage = errorData.message;
         if (errorData && Array.isArray(errorData.errors) && errorData.errors[0] && errorData.errors[0].msg) {
           errorMessage = errorData.errors[0].msg;
         }
       } catch (_) {}
-      if (response.status === 401) {
+      if (errorMessage === 'Failed to save dish' && raw && raw.trim()) {
+        errorMessage = raw.trim().slice(0, 200);
+      }
+      if (status === 401) {
         localStorage.removeItem('currentUser');
-        alert(`${errorMessage}. Please log in again.`);
+        const lower = String(errorMessage || '').toLowerCase();
+        if (lower.includes('admin')) {
+          alert('Admin only: please log in with the admin account (admin@chillbites.com / admin).');
+        } else {
+          alert(`${errorMessage}. Please log in again.`);
+        }
         window.location.href = 'login.html?redirect=admin.html';
         return;
       }
