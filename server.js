@@ -28,7 +28,16 @@ app.use(
 );
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static('public'));
+app.use(express.static('public', {
+  etag: false,
+  setHeaders: (res, path) => {
+    if (path.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-store');
+      return;
+    }
+    res.setHeader('Cache-Control', 'no-cache');
+  },
+}));
 require('./backend/config/passport');
 app.use(passport.initialize());
 

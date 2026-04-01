@@ -609,6 +609,11 @@ async function submitOrder() {
         customerEmail: customerEmailVal,
         orderType: orderTypeVal,
         paymentMethod: paymentMethodVal,
+        items: cart.map((x) => ({
+          name: x.name,
+          quantity: x.quantity,
+          price: Number(x.price),
+        })),
         totalAmount: '₱' + orderData.totalPrice,
         deliveryAddress: deliveryAddressObj,
         paymentDetails: paymentDetailsVal

@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
-import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 import firebaseConfig from "./firebaseConfig.js?v=7";
 
 if (firebaseConfig && firebaseConfig.apiKey) {
@@ -87,6 +87,20 @@ if (firebaseConfig && firebaseConfig.apiKey) {
     if (!auth || !googleProvider) return;
     const redirectTarget = new URLSearchParams(window.location.search).get('redirect');
     if (redirectTarget) sessionStorage.setItem('postLoginRedirect', redirectTarget);
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      if (result && result.user) {
+        await finishGoogleLogin(result.user);
+        return;
+      }
+    } catch (err) {
+      const code = err && err.code ? String(err.code) : '';
+      if (code !== 'auth/popup-blocked' && code !== 'auth/popup-closed-by-user') {
+        const msg = err && err.message ? err.message : 'Google login failed.';
+        alert(`Google login failed: ${msg}`);
+        return;
+      }
+    }
     await signInWithRedirect(auth, googleProvider);
   };
 } else {
