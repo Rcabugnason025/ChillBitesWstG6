@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Auth UI initialization
   // -------------------------------
   initAuthUI();
+  showWelcomeToastIfAny();
 
   // -------------------------------
   // Contact form (on Contact page) with Bootstrap validation
@@ -781,6 +782,52 @@ async function renderOrderHistory() {
   }
 }
 
+function showWelcomeToastIfAny() {
+  const path = window.location.pathname || '';
+  const isHome = path.endsWith('/') || path.endsWith('/index.html') || path.endsWith('index.html');
+  if (!isHome) return;
+
+  let payload = null;
+  try {
+    payload = JSON.parse(sessionStorage.getItem('welcomeToast'));
+  } catch (_) {
+    payload = null;
+  }
+  if (!payload) return;
+  sessionStorage.removeItem('welcomeToast');
+
+  const kind = payload.kind || 'login';
+  const name = payload.name || 'there';
+  const title = kind === 'signup' ? 'Account created' : 'Welcome back';
+  const message = kind === 'signup' ? `Hi ${name}! Your account is ready.` : `Hi ${name}! You’re signed in.`;
+
+  const container = document.createElement('div');
+  container.className = 'toast-container position-fixed top-0 end-0 p-3';
+  container.style.zIndex = '1100';
+  container.innerHTML = `
+    <div class="toast align-items-center text-bg-dark border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          <div class="fw-semibold mb-1">${title}</div>
+          <div class="small">${message}</div>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(container);
+
+  const toastEl = container.querySelector('.toast');
+  if (!toastEl || !window.bootstrap || !bootstrap.Toast) return;
+  const toast = new bootstrap.Toast(toastEl, { delay: 4000 });
+  toast.show();
+  toastEl.addEventListener('hidden.bs.toast', () => {
+    try {
+      container.remove();
+    } catch (_) {}
+  });
+}
+
 // -------------------------------
 // Authentication helpers and page handlers
 // -------------------------------
@@ -907,6 +954,10 @@ function initAuthUI() {
       try {
         const user = await loginUser(email, password);
         const redirect = new URLSearchParams(window.location.search).get('redirect');
+        try {
+          const name = user && (user.username || (user.email && user.email.split('@')[0])) ? (user.username || user.email.split('@')[0]) : 'there';
+          sessionStorage.setItem('welcomeToast', JSON.stringify({ kind: 'login', name }));
+        } catch (_) {}
         
         if (user.isAdmin) {
           window.location.href = 'admin.html';
@@ -940,8 +991,12 @@ function initAuthUI() {
       }
 
       try {
-        await registerUser(username, email, password);
+        const newUser = await registerUser(username, email, password);
         const redirect = new URLSearchParams(window.location.search).get('redirect');
+        try {
+          const name = newUser && (newUser.username || (newUser.email && newUser.email.split('@')[0])) ? (newUser.username || newUser.email.split('@')[0]) : 'there';
+          sessionStorage.setItem('welcomeToast', JSON.stringify({ kind: 'signup', name }));
+        } catch (_) {}
         window.location.href = redirect || 'index.html';
       } catch (error) {
         alert(error.message);

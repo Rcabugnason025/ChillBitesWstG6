@@ -72,6 +72,7 @@ Make sure you have **Node.js** installed on your machine.
 - Google login: open /login.html → Continue with Google → after consent it returns logged in.
 - Admin CRUD: login as admin → /admin.html → add/edit/delete dish → reflects on /menu.html.
 - Ordering: add multiple items → select Delivery → fill address → place order → /thank-you.html shows submitted details.
+- Order history: login → open /orders.html → shows past orders for the current user.
 
 ## Features & Requirements (Milestone 2)
 
@@ -83,6 +84,15 @@ Make sure you have **Node.js** installed on your machine.
 - **File Storage (Cloud Integration)**:
   - **Firebase Storage**: I've integrated Firebase to handle image uploads. When an admin adds a new dish, the image is uploaded to the cloud, and the URL is saved in MongoDB.
   - *Note*: The Firebase configuration is already included in `public/scripts/firebaseConfig.js`.
+
+- **Payments (Demo-friendly)**:
+  - **GCash flow**: shows GCash details + QR on the confirmation page (thank-you) and provides an “Open GCash” link for manual payment.
+  - **COD flow**: standard cash-on-delivery order confirmation.
+
+- **Order Experience**:
+  - **Receipt**: thank-you page includes a receipt table (items, qty, price, subtotal, total).
+  - **Welcome prompt**: after login/signup, the home page shows a short welcome toast.
+  - **Image handling**: menu image paths are resolved safely for case-sensitive hosting environments.
 
 - **Security**:
   - **Helmet.js**: Added for secure HTTP headers.
@@ -98,6 +108,20 @@ To test the Admin features (like adding a new dish):
 3. You will be redirected to the Admin Dashboard where you can upload images and manage the menu.
 
 ---
+
+## Optional: Automatic Email Confirmation (Gmail / SMTP)
+The app can send an order confirmation email automatically after a successful order (server-side). This is optional and only works if SMTP variables are set in Render.
+
+### Gmail Setup (Recommended)
+Use a Gmail **App Password** (requires 2-Step Verification). Set these env vars on Render:
+- `SMTP_HOST=smtp.gmail.com`
+- `SMTP_PORT=587`
+- `SMTP_SECURE=false`
+- `SMTP_USER=yourgmail@gmail.com`
+- `SMTP_PASS=<gmail_app_password_no_spaces>`
+- `SMTP_FROM=ChillBites <yourgmail@gmail.com>`
+
+After saving env vars, redeploy so the service restarts and loads them.
 
 ## Message for the Mentor
 

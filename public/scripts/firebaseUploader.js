@@ -54,6 +54,10 @@ if (firebaseConfig && firebaseConfig.apiKey) {
       throw new Error(message);
     }
     localStorage.setItem('currentUser', JSON.stringify(data));
+    try {
+      const name = data && (data.username || (data.email && data.email.split('@')[0])) ? (data.username || data.email.split('@')[0]) : 'there';
+      sessionStorage.setItem('welcomeToast', JSON.stringify({ kind: 'login', name }));
+    } catch (_) {}
     sessionStorage.removeItem('postLoginRedirect');
     sessionStorage.removeItem('googleLoginInProgress');
     sessionStorage.removeItem('googleLoginCompleting');
