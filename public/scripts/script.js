@@ -188,10 +188,14 @@ async function saveDish() {
       image = await window.firebaseUploadImage(imageFileInput.files[0]);
       if (imageInput) imageInput.value = image;
     } catch (error) {
+      try {
+        if (imageFileInput) imageFileInput.value = '';
+      } catch (_) {}
       if (!image) {
-        alert('Failed to upload image. Please try again.');
-        return;
+        image = 'images/sisig.jpg';
+        if (imageInput) imageInput.value = image;
       }
+      alert('Image upload was blocked (Firebase Storage CORS). Your dish will still be saved using the Image URL field.');
     }
   }
 
