@@ -58,10 +58,41 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
+  const historyTable = document.getElementById('orderHistoryTableBody');
+  if (historyTable && window.location.pathname.includes('orders.html')) {
+    renderOrderHistory();
+  }
 });
 
 const API_URL = `${window.location.origin}/api`;
 let cachedMenuItems = null;
+
+function dedupeMenuByName(items) {
+  if (!Array.isArray(items)) return items;
+  const map = new Map();
+  for (const item of items) {
+    const key = item && item.name ? String(item.name).trim().toLowerCase() : '';
+    if (!key) continue;
+    const existing = map.get(key);
+    if (!existing) {
+      map.set(key, item);
+      continue;
+    }
+    const existingTime = existing && existing.updatedAt ? Date.parse(existing.updatedAt) : 0;
+    const itemTime = item && item.updatedAt ? Date.parse(item.updatedAt) : 0;
+    if ((itemTime || 0) >= (existingTime || 0)) {
+      map.set(key, item);
+    }
+  }
+  const result = Array.from(map.values());
+  result.sort((a, b) => {
+    const aTime = a && a.updatedAt ? Date.parse(a.updatedAt) : 0;
+    const bTime = b && b.updatedAt ? Date.parse(b.updatedAt) : 0;
+    return bTime - aTime;
+  });
+  return result;
+}
 
 // -------------------------------
 // Menu Management (CRUD)
@@ -113,7 +144,7 @@ async function loadAdminMenu() {
   const tableBody = document.getElementById('adminMenuTableBody');
   if (!tableBody) return;
 
-  const menu = await getMenu();
+  const menu = dedupeMenuByName(await getMenu());
   if (!Array.isArray(menu)) return;
   tableBody.innerHTML = menu.map(item => `
     <tr>
@@ -161,6 +192,15 @@ function openAddDishModal() {
 }
 
 async function saveDish() {
+  if (saveDish.inFlight) return;
+  saveDish.inFlight = true;
+  const saveBtn = document.getElementById('saveDishBtn');
+  const saveBtnOriginalText = saveBtn ? saveBtn.textContent : '';
+  if (saveBtn) {
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Saving...';
+  }
+
   const id = document.getElementById('dishId').value;
   const name = document.getElementById('dishName').value;
   const price = document.getElementById('dishPrice').value;
@@ -173,6 +213,11 @@ async function saveDish() {
   const hasFile = !!(imageFileInput && imageFileInput.files && imageFileInput.files[0]);
   if (!name || !price || !desc || (!image && !hasFile)) {
     alert('Please fill in all fields');
+    saveDish.inFlight = false;
+    if (saveBtn) {
+      saveBtn.disabled = false;
+      saveBtn.textContent = saveBtnOriginalText;
+    }
     return;
   }
 
@@ -180,6 +225,11 @@ async function saveDish() {
   if (!currentUser || !currentUser.token) {
     alert('Please log in again.');
     window.location.href = 'login.html';
+    saveDish.inFlight = false;
+    if (saveBtn) {
+      saveBtn.disabled = false;
+      saveBtn.textContent = saveBtnOriginalText;
+    }
     return;
   }
 
@@ -239,6 +289,7 @@ async function saveDish() {
       
       // Refresh table
       loadAdminMenu();
+      alert('Dish saved.');
     } else {
       const status = response.status;
       let raw = '';
@@ -278,6 +329,12 @@ async function saveDish() {
       return;
     }
     alert('An error occurred while saving the dish');
+  } finally {
+    saveDish.inFlight = false;
+    if (saveBtn) {
+      saveBtn.disabled = false;
+      saveBtn.textContent = saveBtnOriginalText;
+    }
   }
 }
 
@@ -579,6 +636,10 @@ async function submitOrder() {
 
   const orderData = {
     user: currentUser._id,
+    customerName: document.getElementById('customerName')?.value || '',
+    customerEmail: document.getElementById('customerEmail')?.value || '',
+    customerPhone: document.getElementById('customerPhone')?.value || '',
+    orderType,
     orderItems: cart.map((x) => ({
       name: x.name,
       quantity: x.quantity,
@@ -658,6 +719,65 @@ async function submitOrder() {
   } catch (error) {
     console.error('Error submitting order:', error);
     alert('An error occurred while placing the order');
+  }
+}
+
+async function renderOrderHistory() {
+  const tableBody = document.getElementById('orderHistoryTableBody');
+  if (!tableBody) return;
+
+  const emptyEl = document.getElementById('orderHistoryEmpty');
+  const user = getCurrentUser();
+  if (!user || !user.token || !user._id) {
+    window.location.href = 'login.html?redirect=orders.html';
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/orders/myorders/${user._id}`, {
+      headers: { 'Authorization': `Bearer ${user.token}` },
+    });
+    if (!response.ok) {
+      const raw = await response.text().catch(() => '');
+      alert(raw || `Failed to load orders (${response.status})`);
+      return;
+    }
+    const orders = await response.json();
+    if (!Array.isArray(orders) || !orders.length) {
+      if (emptyEl) emptyEl.classList.remove('d-none');
+      tableBody.innerHTML = '';
+      return;
+    }
+    if (emptyEl) emptyEl.classList.add('d-none');
+    tableBody.innerHTML = orders
+      .sort((a, b) => {
+        const aTime = a && a.createdAt ? Date.parse(a.createdAt) : 0;
+        const bTime = b && b.createdAt ? Date.parse(b.createdAt) : 0;
+        return bTime - aTime;
+      })
+      .map((o) => {
+        const shortId = String(o._id || '').slice(-6).toUpperCase();
+        const date = o && o.createdAt ? new Date(o.createdAt).toLocaleString() : '';
+        const items = Array.isArray(o.items) ? o.items.map((x) => `${x.quantity}x ${x.name}`).join(', ') : '';
+        const total = typeof o.totalPrice === 'number' ? `₱${o.totalPrice.toFixed(2)}` : '';
+        const payment = o.paymentMethod === 'gcash' ? 'GCash' : 'COD';
+        const status = o.status || 'Pending';
+        const type = o.orderType || '';
+        return `
+          <tr>
+            <td class="fw-semibold">#${shortId}</td>
+            <td class="text-muted small">${date}</td>
+            <td class="text-muted small">${type}</td>
+            <td class="text-muted small">${payment}</td>
+            <td class="text-muted small text-truncate" style="max-width: 320px;">${items}</td>
+            <td class="fw-semibold text-end">${total}</td>
+            <td><span class="badge ${status.toLowerCase() === 'pending' ? 'bg-warning text-dark' : 'bg-success'}">${status}</span></td>
+          </tr>
+        `;
+      })
+      .join('');
+  } catch (e) {
+    alert('Failed to load orders.');
   }
 }
 

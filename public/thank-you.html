@@ -101,6 +101,32 @@
                   </table>
                 </div>
               </div>
+
+              <div id="gcashPaySection" class="mt-4 pt-4 border-top text-start" style="display: none;">
+                <h6 class="fw-bold text-warning mb-3">Pay via GCash</h6>
+                <div class="row g-3 align-items-center">
+                  <div class="col-12 col-md-4 text-center">
+                    <img id="gcashQr" alt="GCash QR" class="img-fluid rounded border" style="max-width: 220px;">
+                  </div>
+                  <div class="col-12 col-md-8">
+                    <div class="small text-muted mb-3">
+                      Scan the QR using the GCash app, then use the reference number shown above.
+                    </div>
+                    <a id="openGcashLink" class="btn btn-outline-success" target="_blank" rel="noopener noreferrer" href="https://www.gcash.com/">
+                      Open GCash
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <div id="shareSection" class="mt-4 pt-4 border-top text-start" style="display: none;">
+                <h6 class="fw-bold text-warning mb-3">Confirmation</h6>
+                <div class="d-flex flex-wrap gap-2">
+                  <a id="emailReceiptLink" class="btn btn-outline-primary" href="#">Send via Email</a>
+                  <a id="smsReceiptLink" class="btn btn-outline-secondary" href="#">Send via SMS</a>
+                  <a href="orders.html" class="btn btn-outline-dark">View Order History</a>
+                </div>
+              </div>
             </div>
 
             <!-- Order Status Tracking -->
@@ -229,6 +255,51 @@
           }).join('');
           totalEl.textContent = `₱${total.toFixed(2)}`;
           document.getElementById('receiptSection').style.display = 'block';
+        }
+
+        const summaryLines = [
+          `ChillBites Order Confirmation`,
+          `Order ID: ${orderData.orderId || ''}`,
+          `Customer: ${orderData.customerName || ''}`,
+          `Phone: ${orderData.customerPhone || ''}`,
+          `Email: ${orderData.customerEmail || ''}`,
+          `Order Type: ${orderData.orderType || ''}`,
+          `Payment: ${orderData.paymentMethod === 'cod' ? 'Cash on Delivery' : 'GCash'}`,
+          `Total: ${orderData.totalAmount || ''}`,
+          '',
+          'Items:',
+          Array.isArray(orderData.items) ? orderData.items.map((x) => `${x.quantity}x ${x.name} (₱${Number(x.price || 0).toFixed(2)})`).join('\n') : '',
+        ].filter(Boolean);
+
+        const email = String(orderData.customerEmail || '').trim();
+        const phone = String(orderData.customerPhone || '').trim();
+        const emailLink = document.getElementById('emailReceiptLink');
+        const smsLink = document.getElementById('smsReceiptLink');
+        const shareSection = document.getElementById('shareSection');
+        if (shareSection) shareSection.style.display = 'block';
+        if (emailLink) {
+          const subject = encodeURIComponent(`ChillBites Order #${orderData.orderId || ''}`);
+          const body = encodeURIComponent(summaryLines.join('\n'));
+          emailLink.href = `mailto:${encodeURIComponent(email)}?subject=${subject}&body=${body}`;
+        }
+        if (smsLink) {
+          const body = encodeURIComponent(summaryLines.join('\n'));
+          smsLink.href = `sms:${encodeURIComponent(phone)}?&body=${body}`;
+        }
+
+        if (orderData.paymentMethod === 'gcash') {
+          const qrEl = document.getElementById('gcashQr');
+          const gcashPaySection = document.getElementById('gcashPaySection');
+          if (gcashPaySection) gcashPaySection.style.display = 'block';
+          const qrData = [
+            'CHILLBITES_GCASH',
+            `amount=${String(orderData.totalAmount || '').replace(/[^\d.]/g, '')}`,
+            `ref=${orderData.paymentDetails && orderData.paymentDetails.referenceNumber ? orderData.paymentDetails.referenceNumber : ''}`,
+            `phone=${orderData.paymentDetails && orderData.paymentDetails.gcashNumber ? orderData.paymentDetails.gcashNumber : ''}`,
+          ].join('|');
+          if (qrEl) {
+            qrEl.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(qrData)}`;
+          }
         }
         
         // Simulate order status updates

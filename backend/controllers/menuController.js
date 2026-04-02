@@ -1,10 +1,27 @@
 const Menu = require('../models/Menu');
 
+function normalizeMenuName(value) {
+  return String(value || '').trim().replace(/\s+/g, ' ');
+}
+
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 // Get all menu items
 const getMenuItems = async (req, res) => {
   try {
-    const menuItems = await Menu.find({});
-    res.json(menuItems);
+    const menuItems = await Menu.find({}).sort({ updatedAt: -1 });
+    const seen = new Set();
+    const unique = [];
+    for (const item of menuItems) {
+      const key = item && item.name ? normalizeMenuName(item.name).toLowerCase() : '';
+      if (!key) continue;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      unique.push(item);
+    }
+    res.json(unique);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -28,15 +45,30 @@ const getMenuItemById = async (req, res) => {
 const createMenuItem = async (req, res) => {
   try {
     const { name, price, desc, image, available } = req.body;
+    const normalizedName = normalizeMenuName(name);
+    const existing = normalizedName
+      ? await Menu.findOne({ name: new RegExp(`^${escapeRegExp(normalizedName)}$`, 'i') })
+      : null;
+
+    if (existing) {
+      existing.name = normalizedName || existing.name;
+      existing.price = price !== undefined ? price : existing.price;
+      existing.desc = desc !== undefined ? desc : existing.desc;
+      existing.image = image !== undefined ? image : existing.image;
+      existing.available = available !== undefined ? available : existing.available;
+      const updated = await existing.save();
+      return res.json(updated);
+    }
+
     const menuItem = new Menu({
-      name,
+      name: normalizedName,
       price,
       desc,
       image,
       available,
     });
     const createdMenuItem = await menuItem.save();
-    res.status(201).json(createdMenuItem);
+    return res.status(201).json(createdMenuItem);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

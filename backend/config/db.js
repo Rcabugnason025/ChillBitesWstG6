@@ -99,6 +99,26 @@ const DEFAULT_MENU = [
   },
 ];
 
+const normalizeMenuName = (value) => String(value || '').trim().replace(/\s+/g, ' ');
+
+const dedupeMenu = async () => {
+  const items = await Menu.find({}).sort({ updatedAt: -1 });
+  const seen = new Set();
+  const idsToDelete = [];
+  for (const item of items) {
+    const key = item && item.name ? normalizeMenuName(item.name).toLowerCase() : '';
+    if (!key) continue;
+    if (seen.has(key)) {
+      idsToDelete.push(item._id);
+    } else {
+      seen.add(key);
+    }
+  }
+  if (idsToDelete.length) {
+    await Menu.deleteMany({ _id: { $in: idsToDelete } });
+  }
+};
+
 const connectDB = async () => {
   try {
     const conn = await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/chillbites', {
@@ -120,8 +140,10 @@ const connectDB = async () => {
     );
 
     for (const item of DEFAULT_MENU) {
-      await Menu.updateOne({ name: item.name }, { $set: item }, { upsert: true });
+      const normalizedName = normalizeMenuName(item.name);
+      await Menu.updateOne({ name: normalizedName }, { $set: { ...item, name: normalizedName } }, { upsert: true });
     }
+    await dedupeMenu();
   } catch (error) {
     console.error(`Database Error: ${error.message}`);
     if (process.env.ALLOW_NO_DB === 'true') {

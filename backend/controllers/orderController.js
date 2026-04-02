@@ -1,10 +1,17 @@
 const Order = require('../models/Order');
+const sendEmail = require('../utils/sendEmail');
+
+const formatMoney = (amount) => `₱${Number(amount || 0).toFixed(2)}`;
 
 // Create new order
 const addOrderItems = async (req, res) => {
   try {
     const {
       user,
+      customerName,
+      customerEmail,
+      customerPhone,
+      orderType,
       orderItems,
       shippingAddress,
       paymentMethod,
@@ -17,6 +24,12 @@ const addOrderItems = async (req, res) => {
     } else {
       const order = new Order({
         user,
+        customer: {
+          name: customerName || '',
+          email: customerEmail || '',
+          phone: customerPhone || '',
+        },
+        orderType: orderType || '',
         items: orderItems,
         shippingAddress,
         paymentMethod,
@@ -25,6 +38,32 @@ const addOrderItems = async (req, res) => {
       });
 
       const createdOrder = await order.save();
+      if (customerEmail) {
+        const itemsText = Array.isArray(orderItems)
+          ? orderItems.map((x) => `${x.quantity}x ${x.name} (${formatMoney(x.price)})`).join('\n')
+          : '';
+        const orderIdShort = String(createdOrder._id).slice(-6).toUpperCase();
+        const subject = `ChillBites Order Confirmation #${orderIdShort}`;
+        const lines = [
+          `Thank you for your order, ${customerName || ''}`.trim(),
+          '',
+          `Order ID: ${orderIdShort}`,
+          `Order Type: ${orderType || ''}`.trim(),
+          `Payment Method: ${paymentMethod}`,
+          '',
+          'Items:',
+          itemsText,
+          '',
+          `Total: ${formatMoney(totalPrice)}`,
+          '',
+          'If you need help, reply to this email.',
+        ].filter(Boolean);
+        sendEmail({
+          to: customerEmail,
+          subject,
+          text: lines.join('\n'),
+        }).catch(() => {});
+      }
       res.status(201).json(createdOrder);
     }
   } catch (error) {

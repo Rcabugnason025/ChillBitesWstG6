@@ -6,6 +6,12 @@ const orderSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
+  customer: {
+    name: { type: String },
+    email: { type: String },
+    phone: { type: String },
+  },
+  orderType: { type: String },
   items: [
     {
       name: { type: String, required: true },
