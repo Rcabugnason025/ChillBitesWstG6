@@ -1,4 +1,5 @@
 const Menu = require('../models/Menu');
+const resolvePublicImage = require('../utils/resolvePublicImage');
 
 function normalizeMenuName(value) {
   return String(value || '').trim().replace(/\s+/g, ' ');
@@ -21,7 +22,10 @@ const getMenuItems = async (req, res) => {
       seen.add(key);
       unique.push(item);
     }
-    res.json(unique);
+    res.json(unique.map((x) => ({
+      ...x.toObject(),
+      image: resolvePublicImage(x.image),
+    })));
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -32,7 +36,10 @@ const getMenuItemById = async (req, res) => {
   try {
     const menuItem = await Menu.findById(req.params.id);
     if (menuItem) {
-      res.json(menuItem);
+      res.json({
+        ...menuItem.toObject(),
+        image: resolvePublicImage(menuItem.image),
+      });
     } else {
       res.status(404).json({ message: 'Menu item not found' });
     }
